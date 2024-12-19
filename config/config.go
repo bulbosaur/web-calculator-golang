@@ -1,19 +1,27 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 )
 
 type Config struct {
-	Addr string
+	Port string `json:"port"`
+	Host string `json:"host"`
 }
 
-func GettingConfig() *Config {
-	config := new(Config)
-	address := os.Getenv("PORT")
-	config.Addr = address
-	if config.Addr == "" {
-		config.Addr = "8080"
+func GettingConfig(filePath string) (*Config, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
 	}
-	return config
+	defer file.Close()
+
+	config := new(Config)
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
 }

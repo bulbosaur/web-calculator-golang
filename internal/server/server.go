@@ -9,13 +9,19 @@ import (
 )
 
 func RunServer() {
-	config := config.GettingConfig()
-	address := ":" + config.Addr
+	config, err := config.GettingConfig(".../config/config.json")
+	if err != nil {
+		log.Fatal("Config error")
+	}
+
+	addr := config.Host + ":" + config.Port
 
 	http.HandleFunc("/api/v1/calculate", handlers.CalcHandler)
 	http.HandleFunc("/coffe", handlers.CoffeeHandler)
 
-	err := http.ListenAndServe(address, nil)
+	log.Printf("Server starting on %s", addr)
+	err = http.ListenAndServe(config.Port, nil)
+
 	if err != nil {
 		log.Fatal("Internal server error")
 	}
