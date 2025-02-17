@@ -1,26 +1,36 @@
 package config
 
 import (
-	"os"
+	"fmt"
+	"log"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Host string
-	Port string
-}
+func init() {
+	viper.SetDefault("server.host", "localhost")
+	viper.SetDefault("server.port", "8080")
 
-func GettingConfig() *Config {
-	config := new(Config)
+	viper.SetDefault("time.TIME_ADDITION_MS", 100)
+	viper.SetDefault("time.TIME_SUBTRACTION_MS", 100)
+	viper.SetDefault("time.TIME_MULTIPLICATIONS_MS", 100)
+	viper.SetDefault("time.TIME_DIVISIONS_MS", 100)
 
-	config.Host = os.Getenv("HOST")
-	if config.Host == "" {
-		config.Host = "localhost"
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Print("config file not found, default values are set")
+		} else {
+			panic(fmt.Errorf("fatal error config file: %w", err))
+		}
 	}
 
-	config.Port = os.Getenv("PORT")
-	if config.Port == "" {
-		config.Port = "8080"
-	}
-
-	return config
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+	})
+	viper.WatchConfig()
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 )
 
+// Calc вызывает токенизацию выражения и затем записывает его в RPN
 func Calc(stringExpression string) (float64, error) {
 	expression, err := tokenize(stringExpression)
 	if err != nil {

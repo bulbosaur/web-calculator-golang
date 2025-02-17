@@ -29,39 +29,30 @@ go run cmd/main.go
 
 ## Environment Variables
 
-| Variable | Description | Default Value |
-|----------|----------------|----------------|
-| PORT | Server port | 8080 |
-| HOST | Server host | localhost |
+| Variable                  | Description                                                    | Default Value |
+|---------------------------|----------------------------------------------------------------|---------------|
+| PORT                      | Port for running the server                                    | 8080          |
+| HOST                      | Host for running the server                                    | localhost     |
+| TIME_ADDITION_MS          | Execution time for the addition operation in milliseconds      | 100           |
+| TIME_SUBTRACTION_MS       | Execution time for the subtraction operation in milliseconds   | 100           |
+| TIME_MULTIPLICATIONS_MS   | Execution time for the multiplication operation in milliseconds| 100           |
+| TIME_DIVISIONS_MS         | Execution time for the division operation in milliseconds      | 100           |
 
-To change PORT and HOST values, you need to set them manually in the command line / terminal before starting the server.
+To change the values of the environment variables, you need to create a file named ```config.yaml``` (or edit the existing file ```example_config.yaml```).
 
-### Windows
-
-```bash
-set PORT=3000
-set HOST=0.0.0.0
-```
-
-Check set variables:
+### Example of a Config File
 
 ```bash
-echo %PORT%
-echo %HOST%
-```
+# web-calculator-golang/config/config.yaml
+server:
+  host: localhost
+  port: 8080
 
-### Linux / MacOS
-
-```bash
-export PORT=3000
-export HOST=0.0.0.0
-```
-
-Check set variables:
-
-``` bash
-echo $PORT
-echo $HOST
+time:
+  TIME_ADDITION_MS: 100
+  TIME_SUBTRACTION_MS: 100
+  TIME_MULTIPLICATIONS_MS: 100
+  TIME_DIVISIONS_MS: 100
 ```
 
 ## API

@@ -5,13 +5,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bulbosaur/web-calculator-golang/config"
 	"github.com/bulbosaur/web-calculator-golang/internal/handlers"
+	"github.com/spf13/viper"
 )
 
+// RunServer запускает сервер с заданными в config.yaml значениями
 func RunServer() {
-	config := config.GettingConfig()
-	addr := fmt.Sprintf("%s:%s", config.Host, config.Port)
+	host := viper.GetString("server.host")
+	port := viper.GetString("server.port")
+	addr := fmt.Sprintf("%s:%s", host, port)
 
 	http.HandleFunc("POST /api/v1/calculate", handlers.CalcHandler)
 	http.HandleFunc("/coffee", handlers.CoffeeHandler)

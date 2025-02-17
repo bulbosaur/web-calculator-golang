@@ -6,8 +6,15 @@ import (
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 )
 
-func tokenize(expression string) ([]models.Token, error) {
+func newToken(value string, isNumber bool) *models.Token {
+	newToken := models.Token{
+		Value:    value,
+		IsNumber: isNumber,
+	}
+	return &newToken
+}
 
+func tokenize(expression string) ([]models.Token, error) {
 	var (
 		tokens []models.Token
 		number string
@@ -17,7 +24,7 @@ func tokenize(expression string) ([]models.Token, error) {
 	for i, symbol := range expression {
 		if unicode.IsSpace(symbol) {
 			if number != "" {
-				tokens = append(tokens, *models.NewToken(number, true))
+				tokens = append(tokens, *newToken(number, true))
 			}
 			continue
 		}
@@ -25,7 +32,7 @@ func tokenize(expression string) ([]models.Token, error) {
 		if unicode.IsDigit(symbol) {
 			number += string(symbol)
 			if i+1 == len(expression) || !unicode.IsDigit(rune(expression[i+1])) {
-				tokens = append(tokens, *models.NewToken(number, true))
+				tokens = append(tokens, *newToken(number, true))
 				number = ""
 			}
 			continue
@@ -33,7 +40,7 @@ func tokenize(expression string) ([]models.Token, error) {
 
 		switch string(symbol) {
 		case "+", "-", "/", "*", "(", ")":
-			tokens = append(tokens, *models.NewToken(string(symbol), false))
+			tokens = append(tokens, *newToken(string(symbol), false))
 		default:
 			err = models.ErrorInvalidCharacter
 			return nil, err
@@ -42,15 +49,15 @@ func tokenize(expression string) ([]models.Token, error) {
 	}
 
 	if number != "" {
-		tokens = append(tokens, *models.NewToken(number, true))
+		tokens = append(tokens, *newToken(number, true))
 		number = ""
 	}
 
-	if !CheckMissingOperand(tokens) {
+	if !checkMissingOperand(tokens) {
 		return nil, models.ErrorMissingOperand
 	}
 
-	if !CheckEmptyBrackets(tokens) {
+	if !checkEmptyBrackets(tokens) {
 		return nil, models.ErrorEmptyBrackets
 	}
 
@@ -58,7 +65,7 @@ func tokenize(expression string) ([]models.Token, error) {
 	return result, nil
 }
 
-func CheckMissingOperand(tokens []models.Token) bool {
+func checkMissingOperand(tokens []models.Token) bool {
 	for i, token := range tokens {
 		if i == len(tokens)-1 {
 			break
@@ -70,7 +77,7 @@ func CheckMissingOperand(tokens []models.Token) bool {
 	return true
 }
 
-func CheckEmptyBrackets(tokens []models.Token) bool {
+func checkEmptyBrackets(tokens []models.Token) bool {
 	for i, token := range tokens {
 		if i == len(tokens)-1 {
 			break

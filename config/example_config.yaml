@@ -1,0 +1,10 @@
+# web-calculator-golang\config\config.yaml
+server:
+  host: localhost
+  port: 8080
+
+time:
+  TIME_ADDITION_MS: 100
+  TIME_SUBTRACTION_MS: 100
+  TIME_MULTIPLICATIONS_MS: 100
+  TIME_DIVISIONS_MS: 100
