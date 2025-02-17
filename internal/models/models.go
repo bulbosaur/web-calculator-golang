@@ -33,9 +33,9 @@ type Token struct {
 }
 
 func NewToken(value string, isNumber bool) *Token {
-	new_token := Token{
+	newToken := Token{
 		Value:    value,
 		IsNumber: isNumber,
 	}
-	return &new_token
+	return &newToken
 }
