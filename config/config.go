@@ -8,7 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func init() {
+// Init() считывает переменные окружения
+func Init() {
 	viper.SetDefault("server.host", "localhost")
 	viper.SetDefault("server.port", "8080")
 
@@ -18,8 +19,8 @@ func init() {
 	viper.SetDefault("time.TIME_DIVISIONS_MS", 100)
 
 	viper.SetConfigName("config")
-	viper.SetConfigType("json")
-	viper.AddConfigPath(".")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("../config")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -30,7 +31,7 @@ func init() {
 	}
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed:", e.Name)
+		log.Printf("Config file changed: %s", e.Name)
 	})
 	viper.WatchConfig()
 }

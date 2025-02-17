@@ -31,12 +31,12 @@ go run cmd/main.go
 
 | Variable                  | Description                                                    | Default Value |
 |---------------------------|----------------------------------------------------------------|---------------|
-| PORT                      | Port for running the server                                    | 8080          |
-| HOST                      | Host for running the server                                    | localhost     |
-| TIME_ADDITION_MS          | Execution time for the addition operation in milliseconds      | 100           |
-| TIME_SUBTRACTION_MS       | Execution time for the subtraction operation in milliseconds   | 100           |
-| TIME_MULTIPLICATIONS_MS   | Execution time for the multiplication operation in milliseconds| 100           |
-| TIME_DIVISIONS_MS         | Execution time for the division operation in milliseconds      | 100           |
+| ```PORT```                      | Port for running the server                                    | 8080          |
+| ```HOST```                      | Host for running the server                                    | localhost     |
+| ```TIME_ADDITION_MS```          | Execution time for the addition operation in milliseconds      | 100           |
+| ```TIME_SUBTRACTION_MS```       | Execution time for the subtraction operation in milliseconds   | 100           |
+| ```TIME_MULTIPLICATIONS_MS```   | Execution time for the multiplication operation in milliseconds| 100           |
+| ```TIME_DIVISIONS_MS```         | Execution time for the division operation in milliseconds      | 100           |
 
 To change the values of the environment variables, you need to create a file named ```config.yaml``` (or edit the existing file ```example_config.yaml```).
 
@@ -61,11 +61,11 @@ Default base URL: http://localhost:8080
 
 | API endpoint | Method | Request Body | Server Response | Response Code |
 |--------------|--------|--------------|-----------------|---------------|
-| /api/v1/calculate | POST | {"expression": "2 * 2"} | {"result":"4"} | 200 |
-| /api/v1/calculate | POST | "expression": "2 * 2" | {"error":"Bad request","error_message":"invalid request body"} | 400 |
-| /api/v1/calculate | GET | {"expression": "2 * 2"} | Method Not Allowed | 405 |
-| /coffee | | | I'm a teapot | 418 |
-| /api/v1/tea | | | 404 page not found | 404 |
+| ```/api/v1/calculate``` | ```POST``` | ```{"expression": "2 * 2"}``` | ```{"result":"4"}``` | 200 |
+| ```/api/v1/calculate``` | ```POST``` | ```"expression": "2 * 2"``` | ```{"error":"Bad request","error_message":"invalid request body"}``` | 400 |
+| ```/api/v1/calculate``` | ```GET``` | ```{"expression": "2 * 2"}``` | ```Method Not Allowed``` | 405 |
+| ```/coffee``` | | | ```I'm a teapot``` | 418 |
+| ```/api/v1/tea``` | | | ```404 page not found``` | 404 |
 
 ### Response Codes
 

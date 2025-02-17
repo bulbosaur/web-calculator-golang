@@ -2,8 +2,10 @@ package calc
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
+	"github.com/spf13/viper"
 )
 
 // Calc вызывает токенизацию выражения и затем записывает его в RPN
@@ -80,12 +82,16 @@ func Calc(stringExpression string) (float64, error) {
 
 			switch token.Value {
 			case "+":
+				time.Sleep(time.Duration(viper.GetInt("duration.TIME_ADDITION_MS")) * time.Millisecond)
 				stackResultPolish = append(stackResultPolish, num1+num2)
 			case "-":
+				time.Sleep(time.Duration(viper.GetInt("duration.TIME_SUBTRACTION_MS")) * time.Millisecond)
 				stackResultPolish = append(stackResultPolish, num2-num1)
 			case "*":
+				time.Sleep(time.Duration(viper.GetInt("duration.TIME_MULTIPLICATIONS_MS")) * time.Millisecond)
 				stackResultPolish = append(stackResultPolish, num2*num1)
 			case "/":
+				time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
 				if num1 == 0 {
 					return 0, models.ErrorDivisionByZero
 				}
