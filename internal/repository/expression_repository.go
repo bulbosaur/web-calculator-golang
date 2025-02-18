@@ -18,6 +18,7 @@ func NewExpressionModel(db *sql.DB) *ExpressionModel {
 	return &ExpressionModel{DB: db}
 }
 
+// Insert записывает мат выражение в таблицу БД
 func (e *ExpressionModel) Insert(expression string) (int, error) {
 	query := "INSERT INTO expression (expression, status, result) VALUES (?, ?, ?)"
 	result, err := e.DB.Exec(query, expression, "awaiting processing", "")
