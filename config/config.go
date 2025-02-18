@@ -30,6 +30,8 @@ func Init() {
 		}
 	}
 
+	log.Print("config has been successfully initialized")
+
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Printf("Config file changed: %s", e.Name)
 	})
