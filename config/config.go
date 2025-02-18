@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Init() считывает переменные окружения
+// Init считывает переменные окружения
 func Init() {
 	viper.SetDefault("server.host", "localhost")
 	viper.SetDefault("server.port", "8080")
