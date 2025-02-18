@@ -3,7 +3,10 @@ package models
 import "errors"
 
 var (
-	//ErrorDivisionByZero - ошибка деления на ноль
+	// ErrorCreatingDatabaseRecord - ошибка записи мат выражения в БД
+	ErrorCreatingDatabaseRecord = errors.New("an error occurred while writing an expression to the database")
+
+	// ErrorDivisionByZero - ошибка деления на ноль
 	ErrorDivisionByZero = errors.New("division by zero is not allowed")
 
 	// ErrorEmptyBrackets - пустые скобочки
@@ -20,6 +23,9 @@ var (
 
 	// ErrorInvalidOperand - ошибка при введении операнда
 	ErrorInvalidOperand = errors.New("an invalid operand")
+
+	// ErrorReceivingID - ошибка, которая возникает, не удается получить айди последней записи в БД
+	ErrorReceivingID = errors.New("failed to get ID records in the database")
 
 	// ErrorInvalidRequestBody - ошибка тела запроса
 	ErrorInvalidRequestBody = errors.New("invalid request body")
