@@ -7,8 +7,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	_ "modernc.org/sqlite"
+
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
+	"github.com/spf13/viper"
 )
 
 func TestCalcHandler(t *testing.T) {
@@ -74,7 +77,7 @@ func TestCalcHandler(t *testing.T) {
 			}
 			rr := httptest.NewRecorder()
 
-			db, err := repository.InitDB("../db/calc.db")
+			db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
 			if err != nil {
 				t.Fatalf("failed to init DB: %v", err)
 			}
@@ -121,7 +124,7 @@ func TestCalcHandlerInvalidJSON(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 
-	db, err := repository.InitDB("../db/calc.db")
+	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
 	if err != nil {
 		t.Fatalf("failed to init DB: %v", err)
 	}
