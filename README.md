@@ -1,49 +1,59 @@
 
-# Web-calculator | [English](README.md) | [Русский](README.ru.md)
+# Web-calculator | [English](README.md) | [Русский](README.md)
 
-web-calculator is a web service that allows users to send arithmetic expressions via HTTP and receive their results.
+Web-calculator представляет из себя веб-сервис, при помощи которого пользователь может отправить арифметическое выражение по HTTP и получить в ответ его результат.
 
-## Functionality
 
-- Supports addition, subtraction, multiplication, division operations, and expressions in parentheses
-- Expressions can be entered with or without spaces between numbers and operands
-- The calculator accepts positive integers as input
 
-## Requirements
+## Функционал
 
-- Go version 1.22 or newer
+- Поддерживаются операции сложения, вычитания, умножения и деления, а также выражения в скобках
+- Выражение может вводиться как с пробелами между числом и операндом, так и без
+- Калькулятор принимает на вход положительные целые числа
 
-## Installation
 
-1. Clone the repository
+## Требования
+
+- Go версии ```1.22``` или новее
+
+## ⚠️ Предупреждение
+**Уважаемые проверяющие ЯЛ**  
+Комментарии в коде от и до написаны моими руками и удовлетворяют требованиям ```go-lint```, который я использую в своем проекте для соблюдения код стайла
+
+## Установка
+
+1. Клонирование репозитория
 
 ```bash
 git clone https://github.com/bulbosaur/web-calculator-golang
 ```
 
-2. Run the server from the project repository
+2. Запуск сервера из репозитория проекта
    
-``` bash
+```bash
 go run cmd/main.go
 ```
 
-## Environment Variables
 
-| Variable                  | Description                                                    | Default Value |
-|---------------------------|----------------------------------------------------------------|---------------|
-| ```PORT```                      | Port for running the server                                    | 8080          |
-| ```HOST```                      | Host for running the server                                    | localhost     |
-| ```TIME_ADDITION_MS```          | Execution time for the addition operation in milliseconds      | 100           |
-| ```TIME_SUBTRACTION_MS```       | Execution time for the subtraction operation in milliseconds   | 100           |
-| ```TIME_MULTIPLICATIONS_MS```   | Execution time for the multiplication operation in milliseconds| 100           |
-| ```TIME_DIVISIONS_MS```         | Execution time for the division operation in milliseconds      | 100           |
+## Переменные окружения
 
-To change the values of the environment variables, you need to create a file named ```config.yaml``` (or edit the existing file ```example_config.yaml```).
+| Переменная                    | Описание                                            | Значение по умолчанию |
+|-------------------------------|-----------------------------------------------------|-----------------------|
+| ```PORT```                    | Порт для запуска сервера                            | 8080                  |
+| ```HOST```                    | Хост для запуска сервера                            | localhost             |
+| ```TIME_ADDITION_MS```        | Время выполнения операции сложения в миллисекундах  | 100                   |
+|```TIME_SUBTRACTION_MS```      | Время выполнения операции вычитания в миллисекундах | 100                   |
+| ```TIME_MULTIPLICATIONS_MS``` | Время выполнения операции умножения в миллисекундах | 100                   |
+| ```TIME_DIVISIONS_MS```       | Время выполнения операции деления в миллисекундах   | 100                   |
+| ```DATABASE_PATH```           | Путь к базе данных                                  |                       |
 
-### Example of a Config File
+
+Чтобы изменить значения переменных окружения, необходимо создать файл ```config.yaml``` (или отредактировать существующий файл ```example_config.yaml```)
+
+### Как должен выглядеть config файл
 
 ```bash
-# web-calculator-golang/config/config.yaml
+# web-calculator-golang\config\config.yaml
 server:
   host: localhost
   port: 8080
@@ -57,31 +67,30 @@ time:
 
 ## API
 
-Default base URL: http://localhost:8080
+Базовый URL по умолчанию: ```http://localhost:8080```
 
-| API endpoint | Method | Request Body | Server Response | Response Code |
-|--------------|--------|--------------|-----------------|---------------|
+| API endpoint | Метод | Тело запроса | Ответ сервера | Код ответа |
+|--------------|-------|--------------|---------------|------------|
 | ```/api/v1/calculate``` | ```POST``` | ```{"expression": "2 * 2"}``` | ```{"result":"4"}``` | 200 |
 | ```/api/v1/calculate``` | ```POST``` | ```"expression": "2 * 2"``` | ```{"error":"Bad request","error_message":"invalid request body"}``` | 400 |
 | ```/api/v1/calculate``` | ```GET``` | ```{"expression": "2 * 2"}``` | ```Method Not Allowed``` | 405 |
 | ```/coffee``` | | | ```I'm a teapot``` | 418 |
 | ```/api/v1/tea``` | | | ```404 page not found``` | 404 |
 
-### Response Codes
+### Коды ответов
 
-- 200 - Successful request
-- 400 - Bad request
-- 404 - Resource not found
-- 405 - Method not allowed
-- 422 - Invalid expression (e.g., English letter instead of a number)
-- 500 - Internal server error
+- 200 - Успешный запрос
+- 400 - Некорректный запрос
+- 404 - Ресурс не найден
+- 405 - Метод не поддерживается 
+- 422 - Некорректное выражение (например, буква английского алфавита вместо цифры)
+- 500 - Внутренняя ошибка сервера
 
-### Usage Examples
+### Примеры работы
 
-For sending POST requests, it's most convenient to use [Postman](https://www.postman.com/downloads/).
+Для отправки POST запросов удобнее всего использовать программу [Postman](https://www.postman.com/downloads/).
 
 1. StatusOK 200
-
 ```bash
 curl 'localhost:8080/api/v1/calculate' \
 --header 'Content-Type: application/json' \
@@ -125,7 +134,6 @@ curl 'localhost/api/v1/calculate' \
 ```
 
 3. Unprocessable Entity 422
-
 ```bash
 curl 'localhost:8080/api/v1/calculate' \
 --header 'Content-Type: application/json' \

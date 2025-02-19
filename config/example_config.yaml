@@ -11,3 +11,6 @@ time:
 
 workers:
   COMPUTING_POWER: 5
+
+database:
+  DATABASE_PATH: ./db/calc.db
