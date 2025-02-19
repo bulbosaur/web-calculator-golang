@@ -35,6 +35,7 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 	return int(id), nil
 }
 
+// UpdateStatus устанавливает актуальный статус выражения в БД
 func (e *ExpressionModel) UpdateStatus(id int, status string) {
 	query := "UPDATE expressions SET status = ? WHERE id = ?"
 
