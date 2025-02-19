@@ -1,5 +1,5 @@
 
-# Web-calculator | [English](README.md) | [Русский](README.md)
+# Web-calculator | [English](README.eng.md) | [Русский](README.md)
 
 Web-calculator представляет из себя веб-сервис, при помощи которого пользователь может отправить арифметическое выражение по HTTP и получить в ответ его результат.
 
@@ -63,6 +63,9 @@ time:
   TIME_SUBTRACTION_MS: 100
   TIME_MULTIPLICATIONS_MS: 100
   TIME_DIVISIONS_MS: 100
+
+database:
+  DATABASE_PATH: ./db/calc.db
 ```
 
 ## API

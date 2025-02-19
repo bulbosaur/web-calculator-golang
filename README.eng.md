@@ -58,6 +58,9 @@ time:
   TIME_SUBTRACTION_MS: 100
   TIME_MULTIPLICATIONS_MS: 100
   TIME_DIVISIONS_MS: 100
+
+database:
+  DATABASE_PATH: ./db/calc.db
 ```
 
 ## API

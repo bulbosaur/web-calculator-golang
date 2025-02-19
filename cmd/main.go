@@ -6,7 +6,6 @@ import (
 	config "github.com/bulbosaur/web-calculator-golang/config"
 	server "github.com/bulbosaur/web-calculator-golang/internal/http"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
-	"github.com/spf13/viper"
 
 	_ "modernc.org/sqlite"
 )
@@ -14,7 +13,7 @@ import (
 func main() {
 	config.Init()
 
-	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
+	db, err := repository.InitDB("../db/calc.db")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -10,7 +10,6 @@ import (
 	"github.com/bulbosaur/web-calculator-golang/pkg/calc"
 )
 
-// CalcHandler принимает json с выраженями и подсчитывает их значение при помощи Calc
 func CalcHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		request := new(models.Request)
@@ -34,6 +33,7 @@ func CalcHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 
 		result, err := calc.Calc(request.Expression)
 		if err != nil {
+			exprRepo.UpdateStatus(id, models.StatusFailed)
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(w).Encode(models.ErrorResponse{
 				Error:        "Expression is not valid",
@@ -41,6 +41,8 @@ func CalcHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 			})
 			return
 		}
+
+		exprRepo.UpdateStatus(id, models.StatusResolved)
 
 		response := models.Response{
 			Result: result,
