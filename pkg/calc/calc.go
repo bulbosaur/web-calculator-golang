@@ -10,11 +10,6 @@ import (
 
 // Calc вызывает токенизацию выражения и затем записывает его в RPN
 func Calc(stringExpression string) (float64, error) {
-	// var (
-	// 	jobs    = make(chan int, 100)
-	// 	results = make(chan int, 100)
-	// )
-
 	expression, err := tokenize(stringExpression)
 	if err != nil {
 		return 0, err

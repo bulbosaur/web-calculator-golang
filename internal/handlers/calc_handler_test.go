@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
+	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 )
 
 func TestCalcHandler(t *testing.T) {
@@ -65,15 +66,20 @@ func TestCalcHandler(t *testing.T) {
 		t.Run(tc.requestBody.Expression, func(t *testing.T) {
 			jsonBody, err := json.Marshal(tc.requestBody)
 			if err != nil {
-				t.Fatalf("Failed to marshal request body: %v", err)
+				t.Fatalf("failed to marshal request body: %v", err)
 			}
 			req, err := http.NewRequest("POST", "/api/v1/calculate", bytes.NewBuffer(jsonBody))
 			if err != nil {
-				t.Fatalf("Failed to create request: %v", err)
+				t.Fatalf("failed to create request: %v", err)
 			}
 			rr := httptest.NewRecorder()
 
-			handler := http.HandlerFunc(CalcHandler)
+			db, err := repository.InitDB("../db/calc.db")
+			if err != nil {
+				t.Fatalf("failed to init DB: %v", err)
+			}
+
+			handler := http.HandlerFunc(CalcHandler(repository.NewExpressionModel(db)))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != tc.wantStatus {
@@ -84,7 +90,7 @@ func TestCalcHandler(t *testing.T) {
 				var response models.Response
 				err = json.NewDecoder(rr.Body).Decode(&response)
 				if err != nil {
-					t.Fatalf("Failed to decode response body: %v", err)
+					t.Fatalf("failed to decode response body: %v", err)
 				}
 
 				if response.Result != tc.wantOutput.Result {
@@ -96,7 +102,7 @@ func TestCalcHandler(t *testing.T) {
 				var errorResponse models.ErrorResponse
 				err = json.NewDecoder(rr.Body).Decode(&errorResponse)
 				if err != nil {
-					t.Fatalf("Failed to decode error response body: %v", err)
+					t.Fatalf("failed to decode error response body: %v", err)
 				}
 
 				if errorResponse.Error != tc.wantError.Error {
@@ -114,7 +120,13 @@ func TestCalcHandlerInvalidJSON(t *testing.T) {
 		t.Fatalf("Failed to create request: %v", err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CalcHandler)
+
+	db, err := repository.InitDB("../db/calc.db")
+	if err != nil {
+		t.Fatalf("failed to init DB: %v", err)
+	}
+
+	handler := http.HandlerFunc(CalcHandler(repository.NewExpressionModel(db)))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusBadRequest {
