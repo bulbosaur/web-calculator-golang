@@ -40,9 +40,9 @@ func CalcHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 				ErrorMessage: err.Error(),
 			})
 			return
+		} else {
+			exprRepo.UpdateStatus(id, models.StatusResolved)
 		}
-
-		exprRepo.UpdateStatus(id, models.StatusResolved)
 
 		response := models.Response{
 			Result: result,

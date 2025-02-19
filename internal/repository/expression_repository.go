@@ -38,7 +38,7 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 func (e *ExpressionModel) UpdateStatus(id int, status string) {
 	query := "UPDATE expressions SET status = ? WHERE id = ?"
 
-	_, err := e.DB.Exec(query, models.StatusResolved, id)
+	_, err := e.DB.Exec(query, status, id)
 	if err != nil {
 		log.Fatal(err)
 	}
