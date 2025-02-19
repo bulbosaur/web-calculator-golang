@@ -126,7 +126,7 @@ func TestCalcHandlerInvalidJSON(t *testing.T) {
 
 	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
 	if err != nil {
-		t.Fatalf("failed to init DB: %v", err)
+		t.Fatalf("failed to init DB; %v", err)
 	}
 
 	handler := http.HandlerFunc(CalcHandler(repository.NewExpressionModel(db)))
