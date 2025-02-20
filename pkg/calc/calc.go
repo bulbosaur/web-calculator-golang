@@ -10,6 +10,8 @@ import (
 
 // Calc вызывает токенизацию выражения и затем записывает его в RPN
 func Calc(stringExpression string) (float64, error) {
+	stackResultPolish := make([]float64, 0)
+
 	expression, err := tokenize(stringExpression)
 	if err != nil {
 		return 0, err
@@ -19,51 +21,9 @@ func Calc(stringExpression string) (float64, error) {
 		return 0, models.ErrorEmptyExpression
 	}
 
-	priority := map[string]int{
-		"(": 0,
-		")": 1,
-		"+": 2,
-		"-": 2,
-		"*": 3,
-		"/": 3,
-	}
-	stack := []models.Token{}
-	stackResultPolish := make([]float64, 0)
-	reversePolishNotation := []models.Token{}
-
-	for _, token := range expression {
-		if _, ok := priority[token.Value]; ok {
-			if token.Value == ")" {
-				for i := len(stack) - 1; i >= 0 && stack[i].Value != "("; i-- {
-					reversePolishNotation = append(reversePolishNotation, lastToken(stack))
-					stack = stack[:len(stack)-1]
-				}
-
-				if len(stack) > 0 && lastToken(stack).Value == "(" {
-					stack = stack[:len(stack)-1]
-				} else {
-					return 0, models.ErrorUnclosedBracket
-				}
-				continue
-			}
-
-			for len(stack) > 0 && priority[lastToken(stack).Value] >= priority[token.Value] && token.Value != "(" {
-				reversePolishNotation = append(reversePolishNotation, lastToken(stack))
-				stack = stack[:len(stack)-1]
-			}
-			stack = append(stack, token)
-
-		} else if token.IsNumber {
-			reversePolishNotation = append(reversePolishNotation, token)
-		} else {
-			return 0, models.ErrorInvalidInput
-		}
-	}
-
-	for len(stack) > 0 {
-
-		reversePolishNotation = append(reversePolishNotation, lastToken(stack))
-		stack = stack[:len(stack)-1]
+	reversePolishNotation, err := toReversePolishNotation(expression)
+	if err != nil {
+		return 0, err
 	}
 
 	for _, token := range reversePolishNotation {
@@ -100,6 +60,55 @@ func Calc(stringExpression string) (float64, error) {
 		}
 	}
 	return stackResultPolish[0], nil
+}
+
+func toReversePolishNotation(expression []models.Token) ([]models.Token, error) {
+	priority := map[string]int{
+		"(": 0,
+		")": 1,
+		"+": 2,
+		"-": 2,
+		"*": 3,
+		"/": 3,
+	}
+	stack := []models.Token{}
+	reversePolishNotation := []models.Token{}
+
+	for _, token := range expression {
+		if _, ok := priority[token.Value]; ok {
+			if token.Value == ")" {
+				for i := len(stack) - 1; i >= 0 && stack[i].Value != "("; i-- {
+					reversePolishNotation = append(reversePolishNotation, lastToken(stack))
+					stack = stack[:len(stack)-1]
+				}
+
+				if len(stack) > 0 && lastToken(stack).Value == "(" {
+					stack = stack[:len(stack)-1]
+				} else {
+					return nil, models.ErrorUnclosedBracket
+				}
+				continue
+			}
+
+			for len(stack) > 0 && priority[lastToken(stack).Value] >= priority[token.Value] && token.Value != "(" {
+				reversePolishNotation = append(reversePolishNotation, lastToken(stack))
+				stack = stack[:len(stack)-1]
+			}
+			stack = append(stack, token)
+
+		} else if token.IsNumber {
+			reversePolishNotation = append(reversePolishNotation, token)
+		} else {
+			return nil, models.ErrorInvalidInput
+		}
+	}
+
+	for len(stack) > 0 {
+
+		reversePolishNotation = append(reversePolishNotation, lastToken(stack))
+		stack = stack[:len(stack)-1]
+	}
+	return reversePolishNotation, nil
 }
 
 func lastToken(tokens []models.Token) models.Token {
