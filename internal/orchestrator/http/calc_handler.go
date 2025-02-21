@@ -1,4 +1,4 @@
-package handlers
+package orchestrator
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
+	"github.com/bulbosaur/web-calculator-golang/internal/orchestrator/service"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
-	"github.com/bulbosaur/web-calculator-golang/pkg/calc"
 )
 
 // CalcHandler принимает json с выраженями и подсчитывает их значение при помощи Calc
@@ -32,7 +32,7 @@ func CalcHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 		}
 		log.Printf("Expression ID-%d has been registered", id)
 
-		result, err := calc.Calc(request.Expression)
+		result, err := service.Calc(request.Expression)
 		if err != nil {
 			exprRepo.UpdateStatus(id, models.StatusFailed)
 			w.WriteHeader(http.StatusUnprocessableEntity)
