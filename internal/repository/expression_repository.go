@@ -41,6 +41,16 @@ func (e *ExpressionModel) UpdateStatus(id int, status string) {
 
 	_, err := e.DB.Exec(query, status, id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+	}
+}
+
+// SetResult вносит в базу данных ответ на выражение
+func (e *ExpressionModel) SetResult(id int, result float64) {
+	query := "UPDATE expressions SET result = ? WHERE id = ?"
+
+	_, err := e.DB.Exec(query, result, id)
+	if err != nil {
+		log.Println(err)
 	}
 }

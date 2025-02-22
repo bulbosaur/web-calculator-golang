@@ -16,7 +16,7 @@ func RunOrchestrator(exprRepo *repository.ExpressionModel) {
 	port := viper.GetString("server.ORC_PORT")
 	addr := fmt.Sprintf("%s:%s", host, port)
 
-	http.HandleFunc("POST /api/v1/calculate", CalcHandler(exprRepo))
+	http.HandleFunc("POST /api/v1/calculate", RegHandler(exprRepo))
 	http.HandleFunc("GET /api/v1/expressions", handlers.ListHandler)
 	http.HandleFunc("/coffee", CoffeeHandler)
 

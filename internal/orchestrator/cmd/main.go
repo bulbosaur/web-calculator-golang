@@ -4,7 +4,7 @@ import (
 	"log"
 
 	config "github.com/bulbosaur/web-calculator-golang/config"
-	server "github.com/bulbosaur/web-calculator-golang/internal/http"
+	orchestrator "github.com/bulbosaur/web-calculator-golang/internal/orchestrator/http"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 	"github.com/spf13/viper"
 
@@ -23,5 +23,5 @@ func main() {
 
 	defer db.Close()
 
-	server.RunServer(exprRepo)
+	orchestrator.RunOrchestrator(exprRepo)
 }

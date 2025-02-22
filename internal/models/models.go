@@ -17,6 +17,11 @@ type ErrorResponse struct {
 	ErrorMessage string `json:"error_message"`
 }
 
+// RegisteredExpression - структура ответа, возвращаемого при регистрации выражения в оркестраторе
+type RegisteredExpression struct {
+	Id int `json:"id"`
+}
+
 // Request - структура запроса
 type Request struct {
 	Expression string `json:"expression"`

@@ -29,9 +29,21 @@ git clone https://github.com/bulbosaur/web-calculator-golang
 ```
 
 2. Запуск сервера из репозитория проекта
-   
+
+Необходимо находиться в корневой директории проекта (web-calculator-golang)
+
+Для запуска каждого из сервисов Вам потребуется 2 отдельных терминала. Удобно открыть сплит терминалов можно с помощью горячих клавиш: ```Ctrl + Shift + 5``` (Windows/Linux) или ```Cmd + Shift + 5``` (macOS)
+
+В первом необходимо ввеси команду:
+
 ```bash
-go run cmd/main.go
+go run ./internal/orchestrator/cmd/main.go
+```
+
+А во втором:
+
+```bash
+go run ./internal/agent/cmd/main.go
 ```
 
 

@@ -1,31 +1,114 @@
 package agent
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 	"github.com/spf13/viper"
 )
 
-// ExecuteOperation выполняет одну операцию
-func ExecuteOperation(arg1, arg2 float64, operation string) (float64, error) {
-	switch operation {
+type Task struct {
+	ID        int     `json:"id"`
+	Arg1      float64 `json:"arg1"`
+	Arg2      float64 `json:"arg2"`
+	Operation string  `json:"operation"`
+}
+
+// RunAgent запускает агента
+func RunAgent() {
+	orc_host := viper.GetString("server.ORC_HOST")
+	orc_port := viper.GetString("server.ORC_PORT")
+	orchestratorURL := fmt.Sprintf("%s:%s", orc_host, orc_port)
+
+	interval := 10 * time.Second
+
+	for {
+		task, err := getTask(orchestratorURL)
+		if err != nil {
+			log.Printf("Error getting task: %v", err)
+			time.Sleep(interval)
+			continue
+		}
+
+		result, err := executeTask(task)
+		if err != nil {
+			log.Printf("Error executing task: %v", err)
+			time.Sleep(interval)
+			continue
+		}
+
+		if err := sendResult(orchestratorURL, task.ID, result); err != nil {
+			log.Printf("Error sending result: %v", err)
+		}
+
+		time.Sleep(interval)
+	}
+}
+
+func getTask(orchestratorURL string) (*Task, error) {
+	resp, err := http.Get(orchestratorURL + "/internal/task")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("orchestrator returned status code %d", resp.StatusCode)
+	}
+
+	var task Task
+	if err := json.NewDecoder(resp.Body).Decode(&task); err != nil {
+		return nil, fmt.Errorf("failed to decode task: %w", err)
+	}
+
+	return &task, nil
+}
+
+func executeTask(task *Task) (float64, error) {
+	switch task.Operation {
 	case "+":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_ADDITION_MS")) * time.Millisecond)
-		return arg1 + arg2, nil
+		return task.Arg1 + task.Arg2, nil
 	case "-":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_SUBTRACTION_MS")) * time.Millisecond)
-		return arg1 - arg2, nil
+		return task.Arg1 - task.Arg2, nil
 	case "*":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_MULTIPLICATIONS_MS")) * time.Millisecond)
-		return arg1 * arg2, nil
+		return task.Arg1 * task.Arg2, nil
 	case "/":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
-		if arg2 == 0 {
-			return 0, models.ErrorDivisionByZero
+		if task.Arg2 == 0 {
+			return 0, fmt.Errorf("division by zero")
 		}
-		return arg1 / arg2, nil
+		return task.Arg1 / task.Arg2, nil
 	default:
-		return 0, models.ErrorInvalidInput
+		return 0, models.ErrorInvalidOperand
 	}
+}
+
+func sendResult(orchestratorURL string, taskID int, result float64) error {
+	payload, err := json.Marshal(map[string]interface{}{
+		"id":     taskID,
+		"result": result,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to marshal result: %w", err)
+	}
+
+	resp, err := http.Post(orchestratorURL+"/internal/task", "application/json", bytes.NewBuffer(payload))
+	if err != nil {
+		return fmt.Errorf("failed to send result: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("orchestrator returned status code %d", resp.StatusCode)
+	}
+
+	return nil
 }

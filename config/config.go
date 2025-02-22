@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/fsnotify/fsnotify"
@@ -10,8 +9,8 @@ import (
 
 // Init считывает переменные окружения
 func Init() {
-	viper.SetDefault("server.host", "localhost")
-	viper.SetDefault("server.port", "8080")
+	viper.SetDefault("server.ORC_HOST", "localhost")
+	viper.SetDefault("server.ORC_PORT", "8080")
 
 	viper.SetDefault("time.TIME_ADDITION_MS", 100)
 	viper.SetDefault("time.TIME_SUBTRACTION_MS", 100)
@@ -20,14 +19,17 @@ func Init() {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../config")
+	viper.AddConfigPath("./config")
+
+	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Print("config file not found, default values are set")
+			log.Printf("config file not found in paths: %v", viper.ConfigFileUsed())
 		} else {
-			panic(fmt.Errorf("fatal error config file: %w", err))
+			log.Printf("error reading config file: %v", err)
 		}
+		log.Print("default values are set")
 	}
 
 	log.Print("config has been successfully initialized")
