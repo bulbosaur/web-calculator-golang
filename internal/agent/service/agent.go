@@ -23,27 +23,43 @@ type Task struct {
 func RunAgent() {
 	orc_host := viper.GetString("server.ORC_HOST")
 	orc_port := viper.GetString("server.ORC_PORT")
-	orchestratorURL := fmt.Sprintf("%s:%s", orc_host, orc_port)
+	orchestratorURL := fmt.Sprintf("http://%s:%s", orc_host, orc_port)
 
+	workers := viper.GetInt("COMPUTING_POWER")
+	if workers <= 0 {
+		workers = 1
+	}
+
+	for i := 0; i < workers; i++ {
+		go worker(i, orchestratorURL)
+	}
+
+	select {}
+}
+
+func worker(id int, orchestratorURL string) {
 	interval := 10 * time.Second
-
 	for {
 		task, err := getTask(orchestratorURL)
 		if err != nil {
-			log.Printf("Error getting task: %v", err)
+			log.Printf("worker %d: task receiving error: %v", id, err)
 			time.Sleep(interval)
 			continue
 		}
 
+		log.Printf("Worker %d: receive task ID-%d", id, task.ID)
 		result, err := executeTask(task)
 		if err != nil {
-			log.Printf("Error executing task: %v", err)
+			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)
 			time.Sleep(interval)
 			continue
 		}
 
-		if err := sendResult(orchestratorURL, task.ID, result); err != nil {
-			log.Printf("Error sending result: %v", err)
+		err = sendResult(orchestratorURL, task.ID, result)
+		if err != nil {
+			log.Printf("Worker %d: sending error task ID-%d: %v", id, task.ID, err)
+		} else {
+			log.Printf("Worker %d: success task ID-%d\nresult: %f", id, task.ID, result)
 		}
 
 		time.Sleep(interval)
@@ -52,6 +68,7 @@ func RunAgent() {
 
 func getTask(orchestratorURL string) (*Task, error) {
 	resp, err := http.Get(orchestratorURL + "/internal/task")
+	log.Println(orchestratorURL + "/internal/task")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
