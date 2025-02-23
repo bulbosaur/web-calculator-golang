@@ -20,8 +20,9 @@ func main() {
 	}
 
 	exprRepo := repository.NewExpressionModel(db)
+	taskRepo := repository.NewExpressionModel(db)
 
 	defer db.Close()
 
-	orchestrator.RunOrchestrator(exprRepo)
+	orchestrator.RunOrchestrator(exprRepo, taskRepo)
 }

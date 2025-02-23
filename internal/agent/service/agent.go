@@ -12,13 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Task struct {
-	ID        int     `json:"id"`
-	Arg1      float64 `json:"arg1"`
-	Arg2      float64 `json:"arg2"`
-	Operation string  `json:"operation"`
-}
-
 // RunAgent запускает агента
 func RunAgent() {
 	orc_host := viper.GetString("server.ORC_HOST")
@@ -47,26 +40,26 @@ func worker(id int, orchestratorURL string) {
 			continue
 		}
 
-		log.Printf("Worker %d: receive task ID-%d", id, task.ID)
+		log.Printf("Worker %d: receive task ID-%d", id, task.Id)
 		result, err := executeTask(task)
 		if err != nil {
-			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)
+			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.Id, err)
 			time.Sleep(interval)
 			continue
 		}
 
-		err = sendResult(orchestratorURL, task.ID, result)
+		err = sendResult(orchestratorURL, task.Id, result)
 		if err != nil {
-			log.Printf("Worker %d: sending error task ID-%d: %v", id, task.ID, err)
+			log.Printf("Worker %d: sending error task ID-%d: %v", id, task.Id, err)
 		} else {
-			log.Printf("Worker %d: success task ID-%d\nresult: %f", id, task.ID, result)
+			log.Printf("Worker %d: success task ID-%d\nresult: %f", id, task.Id, result)
 		}
 
 		time.Sleep(interval)
 	}
 }
 
-func getTask(orchestratorURL string) (*Task, error) {
+func getTask(orchestratorURL string) (*models.Task, error) {
 	resp, err := http.Get(orchestratorURL + "/internal/task")
 	log.Println(orchestratorURL + "/internal/task")
 	if err != nil {
@@ -78,7 +71,7 @@ func getTask(orchestratorURL string) (*Task, error) {
 		return nil, fmt.Errorf("orchestrator returned status code %d", resp.StatusCode)
 	}
 
-	var task Task
+	var task models.Task
 	if err := json.NewDecoder(resp.Body).Decode(&task); err != nil {
 		return nil, fmt.Errorf("failed to decode task: %w", err)
 	}
@@ -86,7 +79,7 @@ func getTask(orchestratorURL string) (*Task, error) {
 	return &task, nil
 }
 
-func executeTask(task *Task) (float64, error) {
+func executeTask(task *models.Task) (float64, error) {
 	switch task.Operation {
 	case "+":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_ADDITION_MS")) * time.Millisecond)

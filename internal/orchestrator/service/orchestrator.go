@@ -1,14 +1,10 @@
 package orchestrator
 
 import (
-	"errors"
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
-	"sync"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 	"github.com/spf13/viper"
@@ -16,12 +12,7 @@ import (
 
 // Calc вызывает токенизацию выражения, записывает его в RPN. а затем в параллельных горутинах подсчитывает значения выражений в скобках
 func Calc(stringExpression string) (float64, error) {
-	agentCalculations, err := processTasks(stringExpression)
-	if err != nil {
-		return 0, err
-	}
-
-	expression, err := tokenize(agentCalculations)
+	expression, err := tokenize(stringExpression)
 	if err != nil {
 		return 0, err
 	}
@@ -30,7 +21,12 @@ func Calc(stringExpression string) (float64, error) {
 		return 0, models.ErrorEmptyExpression
 	}
 
-	reversePolishNotation, err := toReversePolishNotation(expression)
+	simpleExpression, err := taskSelection(expression)
+	if err != nil {
+		return 0, err
+	}
+
+	reversePolishNotation, err := toReversePolishNotation(simpleExpression)
 	if err != nil {
 		return 0, err
 	}
@@ -38,74 +34,82 @@ func Calc(stringExpression string) (float64, error) {
 	return evaluateRPN(reversePolishNotation)
 }
 
-func processTasks(expr string) (string, error) {
-	re := regexp.MustCompile(`\(([^()]+)\)`)
-	matches := re.FindAllStringSubmatch(expr, -1)
-	if matches == nil {
-		return expr, nil
-	}
+func taskSelection(expression []models.Token) ([]models.Token, error) {
+	var (
+		simpleExpression []models.Token
+		task             []models.Token
+		inBrackets       bool
+	)
 
-	type result struct {
-		original string
-		computed float64
-		err      error
-	}
+	for _, token := range expression {
+		if token.Value == "(" {
+			inBrackets = true
+			task = []models.Token{}
+			continue
+		}
 
-	var wg sync.WaitGroup
-	resultsChan := make(chan result, len(matches))
+		if token.Value == ")" {
+			inBrackets = false
 
-	for _, m := range matches {
-		original := m[0]
-		task := m[1]
-		wg.Add(1)
-		go func(task, original string) {
-			defer wg.Done()
-			computed, err := sendTaskToAgent(task)
-			resultsChan <- result{original: original, computed: computed, err: err}
-		}(task, original)
-	}
+			for len(task) >= 3 {
+				subTask := task[:3]
+				resultToken, err := sendTaskToAgent(subTask)
+				if err != nil {
+					return nil, fmt.Errorf("failed to send subtask to agent: %v", err)
+				}
 
-	wg.Wait()
-	close(resultsChan)
+				task = append([]models.Token{resultToken}, task[3:]...)
+			}
 
-	newExpr := expr
-	for res := range resultsChan {
-		if res.err != nil {
-			return "", res.err
+			simpleExpression = append(simpleExpression, token)
+			continue
+		}
+
+		if inBrackets {
+			task = append(task, token)
+		} else {
+			simpleExpression = append(simpleExpression, token)
 		}
 	}
-	if strings.Contains(newExpr, "(") && strings.Contains(newExpr, ")") {
-		return processTasks(newExpr)
-	}
-	return newExpr, nil
+
+	return simpleExpression, nil
 }
 
-func sendTaskToAgent(task string) (float64, error) {
+func sendTaskToAgent(task []models.Token) (models.Token, error) {
 	host := viper.GetString("server.ORC_HOST")
 	port := viper.GetString("server.ORC_PORT")
 	taskURL := fmt.Sprintf("http://%s:%s/internal/task", host, port)
-	resp, err := http.PostForm(taskURL,
-		map[string][]string{
-			"expression": {task},
-		})
+
+	taskJSON, err := json.Marshal(task)
 	if err != nil {
-		return 0, err
+		return models.Token{}, fmt.Errorf("failed to marshal task: %v", err)
+	}
+
+	resp, err := http.Post(taskURL, "application/json", bytes.NewBuffer(taskJSON))
+	if err != nil {
+		return models.Token{}, fmt.Errorf("failed to send task to agent: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("agent returned status: %s", resp.Status)
+		return models.Token{}, fmt.Errorf("agent returned status %s", resp.Status)
 	}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
+	var resultToken models.Token
+	if err := json.NewDecoder(resp.Body).Decode(&resultToken); err != nil {
+		return models.Token{}, fmt.Errorf("failed to decode agent response: %v", err)
 	}
 
-	resultStr := strings.TrimSpace(string(bodyBytes))
-	value, err := strconv.ParseFloat(resultStr, 64)
-	if err != nil {
-		return 0, errors.New("failed to parse agent response")
+	return resultToken, nil
+}
+
+func NewTask(id int, arg1, arg2 float64, operation string, operationTime int) *models.Task {
+	newTask := models.Task{
+		Id:            id,
+		Arg1:          arg1,
+		Arg2:          arg2,
+		Operation:     operation,
+		OperationTime: operationTime,
 	}
-	return value, nil
+	return &newTask
 }

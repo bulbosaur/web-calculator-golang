@@ -32,6 +32,18 @@ type Response struct {
 	Result float64 `json:"result"`
 }
 
+// Task описывает задачу для выполнения
+type Task struct {
+	Id            int     `json:"id"`
+	ExpressionId  int     `json:"expression_id"`
+	Arg1          float64 `json:"arg1"`
+	Arg2          float64 `json:"arg2"`
+	Operation     string  `json:"operation"`
+	OperationTime int     `json:"operation_time"`
+	Status        string  `json:"status"`
+	Result        float64 `json:"result"`
+}
+
 // Token - структура токена, на которые разбивается исходное выражение
 type Token struct {
 	Value    string
