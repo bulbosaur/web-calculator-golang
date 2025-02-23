@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
@@ -87,8 +88,20 @@ func parseRPN(expression []models.Token, id int, taskRepo *repository.Expression
 			}
 
 			log.Printf("Task ID- %d (expression ID-%d) has been registered", taskId, id)
+			for {
+				taskStatus, taskResult, err := taskRepo.GetTaskStatus(taskId)
+				if err != nil {
+					log.Printf("failed to get task status: %v", err)
+					return err
+				}
 
-			stack = append(stack, 0)
+				if taskStatus == models.StatusResolved {
+					stack = append(stack, taskResult)
+					break
+				}
+
+				time.Sleep(1 * time.Second)
+			}
 		}
 	}
 

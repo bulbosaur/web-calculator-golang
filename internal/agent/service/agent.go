@@ -41,7 +41,9 @@ func worker(id int, orchestratorURL string) {
 		}
 
 		if task == nil {
-
+			log.Printf("Worker %d: no tasks available", id)
+			time.Sleep(interval)
+			continue
 		}
 
 		log.Printf("Worker %d: receive task ID-%d", id, task.Id)

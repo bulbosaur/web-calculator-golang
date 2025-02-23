@@ -23,7 +23,7 @@ func InitDB(path string) (*sql.DB, error) {
 	}
 
 	_, err = db.Exec(
-		`CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, expressionID INTEGER NOT NULL, arg1 TEXT NOT NULL, arg2 TEXT NOT NULL, operation TEXT NOT NULL, operation_time TEXT NOT NULL, status TEXT, result TEXT);`,
+		`CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, expressionID INTEGER NOT NULL, arg1 TEXT NOT NULL, arg2 TEXT NOT NULL, operation TEXT NOT NULL, operation_time INTEGER, status TEXT, result FLOAT);`,
 	)
 	if err != nil {
 		return nil, err
