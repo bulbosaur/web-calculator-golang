@@ -7,11 +7,12 @@ import (
 	"net/http"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
+	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 	"github.com/spf13/viper"
 )
 
 // Calc вызывает токенизацию выражения, записывает его в RPN. а затем в параллельных горутинах подсчитывает значения выражений в скобках
-func Calc(stringExpression string) (float64, error) {
+func Calc(stringExpression string, id int, taskRepo *repository.ExpressionModel) (float64, error) {
 	expression, err := tokenize(stringExpression)
 	if err != nil {
 		return 0, err
@@ -21,17 +22,14 @@ func Calc(stringExpression string) (float64, error) {
 		return 0, models.ErrorEmptyExpression
 	}
 
-	simpleExpression, err := taskSelection(expression)
+	reversePolishNotation, err := toReversePolishNotation(expression)
 	if err != nil {
 		return 0, err
 	}
 
-	reversePolishNotation, err := toReversePolishNotation(simpleExpression)
-	if err != nil {
-		return 0, err
-	}
+	parseRPN(reversePolishNotation, id, taskRepo)
 
-	return evaluateRPN(reversePolishNotation)
+	return 0, nil
 }
 
 func taskSelection(expression []models.Token) ([]models.Token, error) {
@@ -103,13 +101,12 @@ func sendTaskToAgent(task []models.Token) (models.Token, error) {
 	return resultToken, nil
 }
 
-func NewTask(id int, arg1, arg2 float64, operation string, operationTime int) *models.Task {
+func NewTask(id int, arg1, arg2 float64, operation string) *models.Task {
 	newTask := models.Task{
-		Id:            id,
-		Arg1:          arg1,
-		Arg2:          arg2,
-		Operation:     operation,
-		OperationTime: operationTime,
+		ExpressionId: id,
+		Arg1:         arg1,
+		Arg2:         arg2,
+		Operation:    operation,
 	}
 	return &newTask
 }

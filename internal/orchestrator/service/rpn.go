@@ -1,12 +1,12 @@
 package orchestrator
 
 import (
+	"fmt"
+	"log"
 	"strconv"
-	"sync"
-	"time"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
-	"github.com/spf13/viper"
+	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 )
 
 func toReversePolishNotation(expression []models.Token) ([]models.Token, error) {
@@ -58,77 +58,45 @@ func toReversePolishNotation(expression []models.Token) ([]models.Token, error) 
 	return reversePolishNotation, nil
 }
 
-func evaluateRPN(rpn []models.Token) (float64, error) {
-	stackResultPolish := make([]float64, 0)
-	var wg sync.WaitGroup
-	results := make(chan float64, len(rpn))
-	errors := make(chan error, len(rpn))
+func parseRPN(expression []models.Token, id int, taskRepo *repository.ExpressionModel) error {
+	var (
+		stack []float64
+	)
 
-	for _, token := range rpn {
-		if token.Value == "(" {
-			wg.Add(1)
-			go func(t models.Token) {
-				defer wg.Done()
-				result, err := evaluateSubExpression(t)
-				if err != nil {
-					errors <- err
-					return
-				}
-				results <- result
-			}(token)
-		} else {
-			floatNumber, err := strconv.ParseFloat(token.Value, 64)
-			if err == nil {
-				stackResultPolish = append(stackResultPolish, floatNumber)
-			} else {
-				if len(stackResultPolish) < 2 {
-					return 0, models.ErrorInvalidInput
-				}
-
-				num1 := stackResultPolish[len(stackResultPolish)-1]
-				num2 := stackResultPolish[len(stackResultPolish)-2]
-				stackResultPolish = stackResultPolish[:len(stackResultPolish)-2]
-
-				switch token.Value {
-				case "+":
-					time.Sleep(time.Duration(viper.GetInt("duration.TIME_ADDITION_MS")) * time.Millisecond)
-					stackResultPolish = append(stackResultPolish, num1+num2)
-				case "-":
-					time.Sleep(time.Duration(viper.GetInt("duration.TIME_SUBTRACTION_MS")) * time.Millisecond)
-					stackResultPolish = append(stackResultPolish, num2-num1)
-				case "*":
-					time.Sleep(time.Duration(viper.GetInt("duration.TIME_MULTIPLICATIONS_MS")) * time.Millisecond)
-					stackResultPolish = append(stackResultPolish, num2*num1)
-				case "/":
-					time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
-					if num1 == 0 {
-						return 0, models.ErrorDivisionByZero
-					}
-					stackResultPolish = append(stackResultPolish, num2/num1)
-				}
+	for _, token := range expression {
+		if token.IsNumber {
+			value, err := strconv.ParseFloat(token.Value, 64)
+			if err != nil {
+				log.Println(err)
 			}
+			stack = append(stack, value)
+		} else {
+			if len(stack) < 2 {
+				return fmt.Errorf("there are not enough operands for the operation %s", token)
+			}
+
+			arg2 := stack[len(stack)-1]
+			arg1 := stack[len(stack)-2]
+			stack = stack[:len(stack)-2]
+
+			task := NewTask(id, arg1, arg2, token.Value)
+
+			taskId, err := taskRepo.InsertTask(task, id)
+			if err != nil {
+				log.Printf("something went wrong while creating a record in the database. %v", err)
+			}
+
+			log.Printf("Task ID- %d (expression ID-%d) has been registered", taskId, id)
+
+			stack = append(stack, 0)
 		}
 	}
 
-	go func() {
-		wg.Wait()
-		close(results)
-		close(errors)
-	}()
-
-	for result := range results {
-		stackResultPolish = append(stackResultPolish, result)
+	if len(stack) != 1 {
+		return models.ErrorInvalidInput
 	}
 
-	if len(errors) > 0 {
-		return 0, <-errors
-	}
-
-	return stackResultPolish[0], nil
-}
-
-func evaluateSubExpression(token models.Token) (float64, error) {
-	return Calc(token.Value)
+	return nil
 }
 
 func lastToken(tokens []models.Token) models.Token {

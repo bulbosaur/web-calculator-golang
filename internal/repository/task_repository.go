@@ -8,10 +8,10 @@ import (
 )
 
 // InsertTask записывает мат выражение в таблицу БД
-func (e *ExpressionModel) InsertTask(task string) (int, error) {
+func (e *ExpressionModel) InsertTask(task *models.Task, exprId int) (int, error) {
 	query := "INSERT INTO tasks (expressionID, arg1, arg2, operation, operation_time, status, result) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
-	result, err := e.DB.Exec(query, task, models.StatusWait, "")
+	result, err := e.DB.Exec(query, exprId, task.Arg1, task.Arg2, task.Operation, "", models.StatusWait, "")
 	if err != nil {
 		return 0, fmt.Errorf("%w: %v", models.ErrorCreatingDatabaseRecord, err)
 	}

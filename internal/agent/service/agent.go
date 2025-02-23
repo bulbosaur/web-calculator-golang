@@ -40,6 +40,10 @@ func worker(id int, orchestratorURL string) {
 			continue
 		}
 
+		if task == nil {
+
+		}
+
 		log.Printf("Worker %d: receive task ID-%d", id, task.Id)
 		result, err := executeTask(task)
 		if err != nil {
