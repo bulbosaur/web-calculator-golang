@@ -22,6 +22,13 @@ func InitDB(path string) (*sql.DB, error) {
 		return nil, err
 	}
 
+	_, err = db.Exec(
+		`CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, expressionID INTEGER NOT NULL, arg1 TEXT NOT NULL, arg2 TEXT NOT NULL, operation TEXT NOT NULL, operation_time TEXT NOT NULL, status TEXT, result TEXT);`,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	err = db.Ping()
 	if err != nil {
 		return nil, fmt.Errorf("error when connecting with database: %v", err)
