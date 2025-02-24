@@ -1,6 +1,9 @@
 package models
 
 var (
+	// StatusCalculate указываеь таски, над которыми сейчас работает воркер
+	StatusCalculate = "calculating"
+
 	// StatusFailed указывает, что выражение не решено. Причиной может быть его некорректность
 	StatusFailed = "failed"
 

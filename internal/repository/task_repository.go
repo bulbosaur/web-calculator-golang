@@ -68,10 +68,6 @@ func (e *ExpressionModel) GetTask() (*models.Task, error) {
 		return nil, fmt.Errorf("failed to get task: %v", err)
 	}
 
-	if err := e.LockTask(task.ID); err != nil {
-		return nil, err
-	}
-
 	return &task, nil
 }
 
@@ -88,10 +84,14 @@ func (e *ExpressionModel) GetTaskStatus(taskID int) (string, float64, error) {
 	return status, result, nil
 }
 
-// LockTask блокирует таску
-func (e *ExpressionModel) LockTask(taskID int) error {
-	_, err := e.DB.Exec("UPDATE tasks SET locked = 1 WHERE id = ?", taskID)
-	return err
+// UpdateTaskStatus обновляет статус таски
+func (e *ExpressionModel) UpdateTaskStatus(taskID int, status string) {
+	query := "UPDATE tasks SET status = ? WHERE id = ?"
+
+	_, err := e.DB.Exec(query, status, taskID)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // UpdateTaskResult обновляет ответ таски в базе
