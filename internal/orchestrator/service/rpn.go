@@ -2,9 +2,7 @@ package orchestrator
 
 import (
 	"fmt"
-	"log"
 	"strconv"
-	"time"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
@@ -59,54 +57,60 @@ func toReversePolishNotation(expression []models.Token) ([]models.Token, error) 
 	return reversePolishNotation, nil
 }
 
-func parseRPN(expression []models.Token, id int, taskRepo *repository.ExpressionModel) error {
-	var (
-		stack []float64
-	)
+func parseRPN(expression []models.Token, exprID int, taskRepo *repository.ExpressionModel) error {
+	type StackElement struct {
+		Value  float64
+		TaskID int
+		IsTask bool
+	}
+
+	var stack []StackElement
 
 	for _, token := range expression {
 		if token.IsNumber {
 			value, err := strconv.ParseFloat(token.Value, 64)
 			if err != nil {
-				log.Println(err)
+				return fmt.Errorf("failed to parse number: %v", err)
 			}
-			stack = append(stack, value)
+			stack = append(stack, StackElement{Value: value})
 		} else {
 			if len(stack) < 2 {
-				return fmt.Errorf("there are not enough operands for the operation %s", token)
+				return fmt.Errorf("not enough operands for operation %s", token.Value)
 			}
 
-			arg2 := stack[len(stack)-1]
-			arg1 := stack[len(stack)-2]
+			right := stack[len(stack)-1]
+			left := stack[len(stack)-2]
 			stack = stack[:len(stack)-2]
 
-			task := NewTask(id, arg1, arg2, token.Value)
+			task := &models.Task{
+				ExpressionID: exprID,
+				Operation:    token.Value,
+				Status:       models.StatusWait,
+			}
 
-			taskId, err := taskRepo.InsertTask(task, id)
+			if left.IsTask {
+				task.PrevTaskID1 = left.TaskID
+			} else {
+				task.Arg1 = left.Value
+			}
+
+			if right.IsTask {
+				task.PrevTaskID2 = right.TaskID
+			} else {
+				task.Arg2 = right.Value
+			}
+
+			taskID, err := taskRepo.InsertTask(task)
 			if err != nil {
-				log.Printf("something went wrong while creating a record in the database. %v", err)
+				return fmt.Errorf("failed to insert task: %v", err)
 			}
 
-			log.Printf("Task ID- %d (expression ID-%d) has been registered", taskId, id)
-			for {
-				taskStatus, taskResult, err := taskRepo.GetTaskStatus(taskId)
-				if err != nil {
-					log.Printf("failed to get task status: %v", err)
-					return err
-				}
-
-				if taskStatus == models.StatusResolved {
-					stack = append(stack, taskResult)
-					break
-				}
-
-				time.Sleep(1 * time.Second)
-			}
+			stack = append(stack, StackElement{TaskID: taskID, IsTask: true})
 		}
 	}
 
 	if len(stack) != 1 {
-		return models.ErrorInvalidInput
+		return fmt.Errorf("invalid expression")
 	}
 
 	return nil

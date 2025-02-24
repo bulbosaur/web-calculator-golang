@@ -32,47 +32,6 @@ func Calc(stringExpression string, id int, taskRepo *repository.ExpressionModel)
 	return 0, nil
 }
 
-func taskSelection(expression []models.Token) ([]models.Token, error) {
-	var (
-		simpleExpression []models.Token
-		task             []models.Token
-		inBrackets       bool
-	)
-
-	for _, token := range expression {
-		if token.Value == "(" {
-			inBrackets = true
-			task = []models.Token{}
-			continue
-		}
-
-		if token.Value == ")" {
-			inBrackets = false
-
-			for len(task) >= 3 {
-				subTask := task[:3]
-				resultToken, err := sendTaskToAgent(subTask)
-				if err != nil {
-					return nil, fmt.Errorf("failed to send subtask to agent: %v", err)
-				}
-
-				task = append([]models.Token{resultToken}, task[3:]...)
-			}
-
-			simpleExpression = append(simpleExpression, token)
-			continue
-		}
-
-		if inBrackets {
-			task = append(task, token)
-		} else {
-			simpleExpression = append(simpleExpression, token)
-		}
-	}
-
-	return simpleExpression, nil
-}
-
 func sendTaskToAgent(task []models.Token) (models.Token, error) {
 	host := viper.GetString("server.ORC_HOST")
 	port := viper.GetString("server.ORC_PORT")
@@ -103,7 +62,7 @@ func sendTaskToAgent(task []models.Token) (models.Token, error) {
 
 func NewTask(id int, arg1, arg2 float64, operation string) *models.Task {
 	newTask := models.Task{
-		ExpressionId: id,
+		ExpressionID: id,
 		Arg1:         arg1,
 		Arg2:         arg2,
 		Operation:    operation,

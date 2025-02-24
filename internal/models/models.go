@@ -34,14 +34,20 @@ type Response struct {
 
 // Task описывает задачу для выполнения
 type Task struct {
-	Id            int     `json:"id"`
-	ExpressionId  int     `json:"expression_id"`
-	Arg1          float64 `json:"arg1"`
-	Arg2          float64 `json:"arg2"`
-	Operation     string  `json:"operation"`
-	OperationTime int     `json:"operation_time"`
-	Status        string  `json:"status"`
-	Result        float64 `json:"result"`
+	ID           int     `json:"ID"`
+	ExpressionID int     `json:"ExpressionID"`
+	Arg1         float64 `json:"Arg1"`
+	Arg2         float64 `json:"Arg2"`
+	PrevTaskID1  int     `json:"PrevTaskID1"`
+	PrevTaskID2  int     `json:"PrevTaskID2"`
+	Operation    string  `json:"Operation"`
+	Status       string  `json:"Status"`
+	Result       float64 `json:"Result"`
+}
+
+// TaskResponse - структура, содержащая одну таску
+type TaskResponse struct {
+	Task Task `json:"task"`
 }
 
 // Token - структура токена, на которые разбивается исходное выражение
