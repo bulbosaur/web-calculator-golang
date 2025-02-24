@@ -83,6 +83,7 @@ func parseRPN(expression []models.Token, exprID int, taskRepo *repository.Expres
 			stack = stack[:len(stack)-2]
 
 			task := NewTask(exprID, left.Value, right.Value, token.Value)
+			task.Status = models.StatusWait
 
 			if left.IsTask {
 				task.PrevTaskID1 = left.TaskID

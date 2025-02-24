@@ -22,7 +22,7 @@ func NewExpressionModel(db *sql.DB) *ExpressionModel {
 func (e *ExpressionModel) Insert(expression string) (int, error) {
 	query := "INSERT INTO expressions (expression, status, result) VALUES (?, ?, ?)"
 
-	result, err := e.DB.Exec(query, expression, models.StatusResolved, "")
+	result, err := e.DB.Exec(query, expression, models.StatusWait, "")
 	if err != nil {
 		return 0, fmt.Errorf("%w: %v", models.ErrorCreatingDatabaseRecord, err)
 	}
