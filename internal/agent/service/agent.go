@@ -31,7 +31,7 @@ func RunAgent() {
 }
 
 func worker(id int, orchestratorURL string) {
-	interval := 10 * time.Second
+	interval := 5 * time.Second
 	for {
 		task, err := getTask(orchestratorURL)
 		if err != nil {

@@ -30,7 +30,7 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{"task": task})
 
-			exprRepo.UpdateTaskStatus(task.ID, models.StatusCalculate)
+			// exprRepo.UpdateTaskStatus(task.ID, models.StatusCalculate)
 
 		case http.MethodPost:
 			var req struct {
