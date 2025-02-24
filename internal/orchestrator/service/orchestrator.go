@@ -32,7 +32,7 @@ func Calc(stringExpression string, id int, taskRepo *repository.ExpressionModel)
 	return 0, nil
 }
 
-func sendTaskToAgent(task []models.Token) (models.Token, error) {
+func sendTaskToAgent(task *models.Task) (models.Token, error) {
 	host := viper.GetString("server.ORC_HOST")
 	port := viper.GetString("server.ORC_PORT")
 	taskURL := fmt.Sprintf("http://%s:%s/internal/task", host, port)

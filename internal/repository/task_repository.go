@@ -38,12 +38,14 @@ func (e *ExpressionModel) InsertTask(task *models.Task) (int, error) {
 	return int(id), nil
 }
 
+// GetTask забирает из базы таску для агента
 func (e *ExpressionModel) GetTask() (*models.Task, error) {
 	query := `
         SELECT id, expressionID, arg1, arg2, prev_task_id1, prev_task_id2, operation, status, result
         FROM tasks
-        WHERE status = ? AND (prev_task_id1 = 0 OR prev_task_id1 IS NULL OR prev_task_id1 IN (SELECT id FROM tasks WHERE status = ?))
-          AND (prev_task_id2 = 0 OR prev_task_id2 IS NULL OR prev_task_id2 IN (SELECT id FROM tasks WHERE status = ?))
+        WHERE status = ?
+        AND (prev_task_id1 = 0 OR prev_task_id1 IN (SELECT id FROM tasks WHERE status = ?))
+        AND (prev_task_id2 = 0 OR prev_task_id2 IN (SELECT id FROM tasks WHERE status = ?))
         LIMIT 1
     `
 
@@ -66,9 +68,14 @@ func (e *ExpressionModel) GetTask() (*models.Task, error) {
 		return nil, fmt.Errorf("failed to get task: %v", err)
 	}
 
+	if err := e.LockTask(task.ID); err != nil {
+		return nil, err
+	}
+
 	return &task, nil
 }
 
+// GetTaskStatus возвращает статус и ответ таски
 func (e *ExpressionModel) GetTaskStatus(taskID int) (string, float64, error) {
 	var status string
 	var result float64
@@ -79,4 +86,21 @@ func (e *ExpressionModel) GetTaskStatus(taskID int) (string, float64, error) {
 	}
 	log.Printf("status %v", status)
 	return status, result, nil
+}
+
+// LockTask блокирует таску
+func (e *ExpressionModel) LockTask(taskID int) error {
+	_, err := e.DB.Exec("UPDATE tasks SET locked = TRUE WHERE id = ?", taskID)
+	return err
+}
+
+// UpdateTaskResult обновляет ответ таски в базе
+func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64) error {
+	_, err := e.DB.Exec(
+		"UPDATE tasks SET status = ?, result = ? WHERE id = ?",
+		models.StatusResolved,
+		result,
+		taskID,
+	)
+	return err
 }
