@@ -10,11 +10,6 @@ import (
 )
 
 func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
-	var result struct {
-		ID     int     `json:"id"`
-		Result float64 `json:"result"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -37,13 +32,15 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 				Id     int     `json:"id"`
 				Result float64 `json:"result"`
 			}
-			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			err := json.NewDecoder(r.Body).Decode(&req)
+			if err != nil {
 				http.Error(w, "Invalid request body", http.StatusUnprocessableEntity)
 				return
 			}
 
 			// taskRepo.UpdateStatus(req.Id, models.StatusResolved)
-			if err := exprRepo.UpdateTaskResult(result.ID, result.Result); err != nil {
+			err = exprRepo.UpdateTaskResult(req.Id, req.Result)
+			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
