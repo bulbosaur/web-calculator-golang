@@ -81,11 +81,6 @@ func getTask(orchestratorURL string) (*models.Task, error) {
 		return nil, fmt.Errorf("failed to decode task: %w", err)
 	}
 
-	if res.Task.Locked == 1 {
-		log.Printf("Task ID=%d is locked (locked=%d), skipping", res.Task.ID, res.Task.Locked)
-		return nil, nil
-	}
-
 	log.Printf("Received task: ID=%d, Arg1=%f, Arg2=%f, PrevTaskID1=%d, PrevTaskID2=%d, Operation=%s",
 		res.Task.ID, res.Task.Arg1, res.Task.Arg2, res.Task.PrevTaskID1, res.Task.PrevTaskID2, res.Task.Operation)
 

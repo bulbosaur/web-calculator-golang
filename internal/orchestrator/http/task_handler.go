@@ -20,7 +20,7 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 		case http.MethodGet:
 			var task *models.Task
 
-			task, err := exprRepo.GetTask()
+			task, id, err := exprRepo.GetTask()
 			if err != nil {
 				log.Println("Failed to get task:", err)
 				http.Error(w, "Failed to get task", http.StatusInternalServerError)
@@ -30,7 +30,7 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{"task": task})
 
-			// exprRepo.UpdateTaskStatus(task.ID, models.StatusCalculate)
+			exprRepo.UpdateTaskStatus(id, models.StatusCalculate)
 
 		case http.MethodPost:
 			var req struct {

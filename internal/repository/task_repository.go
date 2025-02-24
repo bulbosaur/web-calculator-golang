@@ -39,7 +39,7 @@ func (e *ExpressionModel) InsertTask(task *models.Task) (int, error) {
 }
 
 // GetTask забирает из базы таску для агента
-func (e *ExpressionModel) GetTask() (*models.Task, error) {
+func (e *ExpressionModel) GetTask() (*models.Task, int, error) {
 	query := `
         SELECT id, expressionID, arg1, arg2, prev_task_id1, prev_task_id2, operation, status, result
         FROM tasks
@@ -63,12 +63,12 @@ func (e *ExpressionModel) GetTask() (*models.Task, error) {
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, fmt.Errorf("failed to get task: %v", err)
+		return nil, 0, fmt.Errorf("failed to get task: %v", err)
 	}
 
-	return &task, nil
+	return &task, task.ID, nil
 }
 
 // GetTaskStatus возвращает статус и ответ таски
