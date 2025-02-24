@@ -2,7 +2,6 @@ package orchestrator
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
@@ -83,11 +82,6 @@ func parseRPN(expression []models.Token, exprID int, taskRepo *repository.Expres
 			left := stack[len(stack)-2]
 			stack = stack[:len(stack)-2]
 
-			// task := &models.Task{
-			// 	ExpressionID: exprID,
-			// 	Operation:    token.Value,
-			// 	Status:       models.StatusWait,
-			// }
 			task := NewTask(exprID, left.Value, right.Value, token.Value)
 
 			if left.IsTask {
@@ -101,13 +95,6 @@ func parseRPN(expression []models.Token, exprID int, taskRepo *repository.Expres
 			} else {
 				task.Arg2 = right.Value
 			}
-
-			res, err := sendTaskToAgent(task)
-			if err != nil {
-				return err
-			}
-
-			log.Printf("ОНО ПОСЧИТАЛОСЬ %s", res.Value)
 
 			taskID, err := taskRepo.InsertTask(task)
 			if err != nil {

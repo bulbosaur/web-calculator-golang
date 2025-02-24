@@ -10,13 +10,13 @@ import (
 )
 
 // RunOrchestrator запускает сервер оркестратора
-func RunOrchestrator(exprRepo, taskRepo *repository.ExpressionModel) {
+func RunOrchestrator(exprRepo *repository.ExpressionModel) {
 	host := viper.GetString("server.ORC_HOST")
 	port := viper.GetString("server.ORC_PORT")
 	addr := fmt.Sprintf("%s:%s", host, port)
 
-	http.HandleFunc("POST /api/v1/calculate", RegHandler(exprRepo, taskRepo))
-	http.HandleFunc("/internal/task", taskHandler(taskRepo))
+	http.HandleFunc("POST /api/v1/calculate", RegHandler(exprRepo))
+	http.HandleFunc("/internal/task", taskHandler(exprRepo))
 	http.HandleFunc("/coffee", CoffeeHandler)
 
 	log.Printf("Orchestrator starting on %s", addr)

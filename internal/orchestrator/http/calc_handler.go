@@ -10,7 +10,7 @@ import (
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 )
 
-func RegHandler(exprRepo, taskRepo *repository.ExpressionModel) http.HandlerFunc {
+func RegHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		request := new(models.Request)
 		defer r.Body.Close()
@@ -31,7 +31,7 @@ func RegHandler(exprRepo, taskRepo *repository.ExpressionModel) http.HandlerFunc
 		}
 		log.Printf("Expression ID-%d has been registered", id)
 
-		result, err := orchestrator.Calc(request.Expression, id, taskRepo)
+		err = orchestrator.Calc(request.Expression, id, exprRepo)
 		if err != nil {
 			exprRepo.UpdateStatus(id, models.StatusFailed)
 			w.WriteHeader(http.StatusUnprocessableEntity)
@@ -41,9 +41,6 @@ func RegHandler(exprRepo, taskRepo *repository.ExpressionModel) http.HandlerFunc
 			})
 			return
 		}
-
-		exprRepo.UpdateStatus(id, models.StatusResolved)
-		exprRepo.SetResult(id, result)
 
 		response := models.RegisteredExpression{
 			Id: id,
