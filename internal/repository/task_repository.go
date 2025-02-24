@@ -90,7 +90,7 @@ func (e *ExpressionModel) GetTaskStatus(taskID int) (string, float64, error) {
 
 // LockTask блокирует таску
 func (e *ExpressionModel) LockTask(taskID int) error {
-	_, err := e.DB.Exec("UPDATE tasks SET locked = TRUE WHERE id = ?", taskID)
+	_, err := e.DB.Exec("UPDATE tasks SET locked = 1 WHERE id = ?", taskID)
 	return err
 }
 

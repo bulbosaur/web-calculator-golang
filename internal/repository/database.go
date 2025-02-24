@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// InitDB выносит логику открытия БД в отдельную функцию
+// InitDB открывает соединение с БД и создаёт необходимые таблицы.
 func InitDB(path string) (*sql.DB, error) {
 	log.Printf("Database path: %s", path)
 
@@ -15,18 +15,34 @@ func InitDB(path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("error when opening database: %v", err)
 	}
 
-	_, err = db.Exec(
-		`CREATE TABLE IF NOT EXISTS expressions (id INTEGER PRIMARY KEY AUTOINCREMENT, expression TEXT NOT NULL, status TEXT NOT NULL, result TEXT);`,
-	)
+	createExpressions := `
+ CREATE TABLE IF NOT EXISTS expressions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  expression TEXT NOT NULL,
+  status TEXT NOT NULL,
+  result TEXT
+ );`
+	_, err = db.Exec(createExpressions)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating expressions table: %v", err)
 	}
 
-	_, err = db.Exec(
-		`CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, expressionID INTEGER NOT NULL, arg1 TEXT NOT NULL, arg2 TEXT NOT NULL, operation TEXT NOT NULL, operation_time INTEGER, status TEXT, result FLOAT);`,
-	)
+	createTasks := `
+ CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  expressionID INTEGER NOT NULL,
+  arg1 TEXT NOT NULL,
+  arg2 TEXT NOT NULL,
+  prev_task_id1 INTEGER DEFAULT 0,
+  prev_task_id2 INTEGER DEFAULT 0,
+  operation TEXT NOT NULL,
+  status TEXT,
+  result FLOAT,
+  locked INTEGER
+ );`
+	_, err = db.Exec(createTasks)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating tasks table: %v", err)
 	}
 
 	err = db.Ping()
@@ -35,6 +51,5 @@ func InitDB(path string) (*sql.DB, error) {
 	}
 
 	log.Print("Successful connection to the database")
-
 	return db, nil
 }

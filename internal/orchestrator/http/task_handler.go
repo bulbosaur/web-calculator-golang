@@ -10,6 +10,11 @@ import (
 )
 
 func taskHandler(taskRepo *repository.ExpressionModel) http.HandlerFunc {
+	var result struct {
+		ID     int     `json:"id"`
+		Result float64 `json:"result"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -35,7 +40,11 @@ func taskHandler(taskRepo *repository.ExpressionModel) http.HandlerFunc {
 				return
 			}
 
-			taskRepo.UpdateStatus(req.Id, models.StatusResolved)
+			// taskRepo.UpdateStatus(req.Id, models.StatusResolved)
+			if err := taskRepo.UpdateTaskResult(result.ID, result.Result); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

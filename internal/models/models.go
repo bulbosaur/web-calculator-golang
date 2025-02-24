@@ -43,6 +43,7 @@ type Task struct {
 	Operation    string  `json:"Operation"`
 	Status       string  `json:"Status"`
 	Result       float64 `json:"Result"`
+	Locked       int     `json:"Locked"`
 }
 
 // TaskResponse - структура, содержащая одну таску

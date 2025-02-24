@@ -14,11 +14,11 @@ import (
 
 // RunAgent запускает агента
 func RunAgent() {
-	orc_host := viper.GetString("server.ORC_HOST")
-	orc_port := viper.GetString("server.ORC_PORT")
-	orchestratorURL := fmt.Sprintf("http://%s:%s", orc_host, orc_port)
+	orchost := viper.GetString("server.ORC_HOST")
+	orcport := viper.GetString("server.ORC_PORT")
+	orchestratorURL := fmt.Sprintf("http://%s:%s", orchost, orcport)
 
-	workers := viper.GetInt("COMPUTING_POWER")
+	workers := viper.GetInt("COMPUTINGPOWER")
 	if workers <= 0 {
 		workers = 1
 	}
@@ -79,6 +79,11 @@ func getTask(orchestratorURL string) (*models.Task, error) {
 	var res models.TaskResponse
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, fmt.Errorf("failed to decode task: %w", err)
+	}
+
+	if res.Task.Locked == 1 {
+		log.Printf("Task ID=%d is locked (locked=%d), skipping", res.Task.ID, res.Task.Locked)
+		return nil, nil
 	}
 
 	log.Printf("Received task: ID=%d, Arg1=%f, Arg2=%f, PrevTaskID1=%d, PrevTaskID2=%d, Operation=%s",
