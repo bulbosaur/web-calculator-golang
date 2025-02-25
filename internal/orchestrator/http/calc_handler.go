@@ -10,7 +10,7 @@ import (
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
 )
 
-func RegHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
+func regHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		request := new(models.Request)
 		defer r.Body.Close()

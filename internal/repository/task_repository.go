@@ -71,6 +71,36 @@ func (e *ExpressionModel) GetTask() (*models.Task, int, error) {
 	return &task, task.ID, nil
 }
 
+// GetTaskByID возвращает из базы данных соответствующую таску
+func (e *ExpressionModel) GetTaskByID(taskID int) (*models.Task, error) {
+	query := `
+        SELECT id, expressionID, arg1, arg2, prev_task_id1, prev_task_id2, operation, status, result
+        FROM tasks
+        WHERE id = ?
+    `
+
+	var task models.Task
+	err := e.DB.QueryRow(query, taskID).Scan(
+		&task.ID,
+		&task.ExpressionID,
+		&task.Arg1,
+		&task.Arg2,
+		&task.PrevTaskID1,
+		&task.PrevTaskID2,
+		&task.Operation,
+		&task.Status,
+		&task.Result,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("task not found")
+		}
+		return nil, fmt.Errorf("failed to get task: %v", err)
+	}
+
+	return &task, nil
+}
+
 // GetTaskStatus возвращает статус и ответ таски
 func (e *ExpressionModel) GetTaskStatus(taskID int) (string, float64, error) {
 	var status string

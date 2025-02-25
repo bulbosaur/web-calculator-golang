@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/repository"
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
 
@@ -15,12 +16,15 @@ func RunOrchestrator(exprRepo *repository.ExpressionModel) {
 	port := viper.GetString("server.ORC_PORT")
 	addr := fmt.Sprintf("%s:%s", host, port)
 
-	http.HandleFunc("POST /api/v1/calculate", RegHandler(exprRepo))
-	http.HandleFunc("/internal/task", taskHandler(exprRepo))
-	http.HandleFunc("/coffee", CoffeeHandler)
+	router := mux.NewRouter()
+
+	router.HandleFunc("/api/v1/calculate", regHandler(exprRepo)).Methods("POST")
+	router.HandleFunc("/internal/task", taskHandler(exprRepo))
+	router.HandleFunc("/internal/task/{id}", taskResultHandler(exprRepo)).Methods("GET")
+	router.HandleFunc("/coffee", CoffeeHandler)
 
 	log.Printf("Orchestrator starting on %s", addr)
-	err := http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, router)
 
 	if err != nil {
 		log.Fatal("Orchestrator server error:", err)
