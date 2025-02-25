@@ -113,3 +113,4 @@ database:
 ## База данных
 
 [Imgur](https://i.imgur.com/CDJrb9i.png)
+<img src="https://i.imgur.com/CDJrb9i.png" alt="Схема БД" width="500">
