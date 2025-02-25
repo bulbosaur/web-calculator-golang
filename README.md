@@ -37,13 +37,13 @@ git clone https://github.com/bulbosaur/web-calculator-golang
 В первом необходимо ввеси команду:
 
 ```bash
-go run ./internal/orchestrator/cmd/main.go
+go run ./cmd/orchestrator/main.go
 ```
 
 А во втором:
 
 ```bash
-go run ./internal/agent/cmd/main.go
+go run ./cmd/agent/main.go
 ```
 
 

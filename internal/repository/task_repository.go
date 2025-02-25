@@ -124,7 +124,7 @@ func (e *ExpressionModel) UpdateTaskStatus(taskID int, status string) {
 	}
 }
 
-// UpdateTaskResult обновляет ответ таски в базе
+// UpdateTaskResult обновляет результат таски в базе и если все остальные действия выраженрия выполены, пишет окончательный ответ
 func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64) error {
 	_, err := e.DB.Exec(
 		"UPDATE tasks SET status = ?, result = ? WHERE id = ?",
@@ -132,5 +132,32 @@ func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64) error {
 		result,
 		taskID,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+
+	var exprID int
+	err = e.DB.QueryRow("SELECT expressionID FROM tasks WHERE id = ?", taskID).Scan(&exprID)
+	if err != nil {
+		return fmt.Errorf("failed to get expression ID: %v", err)
+	}
+
+	completed, err := e.AreAllTasksCompleted(exprID)
+	if err != nil {
+		return fmt.Errorf("failed to check tasks completion: %v", err)
+	}
+
+	if completed {
+		finalResult, err := e.CalculateExpressionResult(exprID)
+		if err != nil {
+			return fmt.Errorf("failed to calculate expression result: %v", err)
+		}
+
+		err = e.UpdateExpressionResult(exprID, finalResult)
+		if err != nil {
+			return fmt.Errorf("failed to update expression result: %v", err)
+		}
+	}
+
+	return nil
 }

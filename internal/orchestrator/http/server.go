@@ -20,7 +20,7 @@ func RunOrchestrator(exprRepo *repository.ExpressionModel) {
 
 	router.HandleFunc("/api/v1/calculate", regHandler(exprRepo)).Methods("POST")
 	router.HandleFunc("/internal/task", taskHandler(exprRepo))
-	router.HandleFunc("/internal/task/{id}", taskResultHandler(exprRepo)).Methods("GET")
+	router.HandleFunc("/internal/task/{id}", taskResultHandler(exprRepo))
 	router.HandleFunc("/coffee", CoffeeHandler)
 
 	log.Printf("Orchestrator starting on %s", addr)

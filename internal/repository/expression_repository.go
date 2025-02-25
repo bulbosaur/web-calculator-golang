@@ -18,6 +18,50 @@ func NewExpressionModel(db *sql.DB) *ExpressionModel {
 	return &ExpressionModel{DB: db}
 }
 
+// AreAllTasksCompleted проверяет, все ли таски данного выражения выполнены
+func (e *ExpressionModel) AreAllTasksCompleted(exprID int) (bool, error) {
+	query := `
+        SELECT COUNT(*) 
+        FROM tasks 
+        WHERE expressionID = ? AND status != ?
+    `
+	var count int
+	err := e.DB.QueryRow(query, exprID, models.StatusResolved).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("failed to check tasks completion: %v", err)
+	}
+	return count == 0, nil
+}
+
+// CalculateExpressionResult выбирает результаты всех тасок задачи и возвращает итоговый
+func (e *ExpressionModel) CalculateExpressionResult(exprID int) (float64, error) {
+	query := `
+        SELECT result 
+        FROM tasks 
+        WHERE expressionID = ? AND status = ?
+    `
+	rows, err := e.DB.Query(query, exprID, models.StatusResolved)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query tasks: %v", err)
+	}
+	defer rows.Close()
+
+	var results []float64
+	for rows.Next() {
+		var result float64
+		if err := rows.Scan(&result); err != nil {
+			return 0, fmt.Errorf("failed to scan task result: %v", err)
+		}
+		results = append(results, result)
+	}
+
+	if len(results) == 0 {
+		return 0, fmt.Errorf("no completed tasks found for expression ID %d", exprID)
+	}
+
+	return results[len(results)-1], nil
+}
+
 // Insert записывает мат выражение в таблицу БД
 func (e *ExpressionModel) Insert(expression string) (int, error) {
 	query := "INSERT INTO expressions (expression, status, result) VALUES (?, ?, ?)"
@@ -33,6 +77,20 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 	}
 
 	return int(id), nil
+}
+
+// UpdateExpressionResult обновляет результат и статус выражения
+func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64) error {
+	query := `
+        UPDATE expressions 
+        SET result = ?, status = ? 
+        WHERE id = ?
+    `
+	_, err := e.DB.Exec(query, result, models.StatusResolved, exprID)
+	if err != nil {
+		return fmt.Errorf("failed to update expression result: %v", err)
+	}
+	return nil
 }
 
 // UpdateStatus устанавливает актуальный статус выражения в БД

@@ -28,7 +28,7 @@ func taskResultHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(models.ErrorResponse{
-				Error:        "Task receiving error",
+				Error:        "ask receiving error",
 				ErrorMessage: err.Error(),
 			})
 			return

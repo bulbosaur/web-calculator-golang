@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// InitDB открывает соединение с БД и создаёт необходимые таблицы.
+// InitDB открывает соединение с БД и создаёт необходимые таблицы
 func InitDB(path string) (*sql.DB, error) {
 	log.Printf("Database path: %s", path)
 
@@ -37,8 +37,7 @@ func InitDB(path string) (*sql.DB, error) {
   prev_task_id2 INTEGER DEFAULT 0,
   operation TEXT NOT NULL,
   status TEXT,
-  result FLOAT,
-  locked INTEGER
+  result FLOAT
  );`
 	_, err = db.Exec(createTasks)
 	if err != nil {

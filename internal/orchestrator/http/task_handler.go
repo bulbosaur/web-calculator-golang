@@ -38,7 +38,6 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 				return
 			}
 
-			// taskRepo.UpdateStatus(req.Id, models.StatusResolved)
 			err = exprRepo.UpdateTaskResult(req.Id, req.Result)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)

@@ -19,9 +19,9 @@ func main() {
 		log.Fatalf("failed to init DB; %v", err)
 	}
 
-	exprRepo := repository.NewExpressionModel(db)
+	ExprRepo := repository.NewExpressionModel(db)
 
 	defer db.Close()
 
-	orchestrator.RunOrchestrator(exprRepo)
+	orchestrator.RunOrchestrator(ExprRepo)
 }
