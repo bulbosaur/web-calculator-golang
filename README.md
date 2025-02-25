@@ -109,3 +109,7 @@ database:
 ### Примеры работы
 
 Для отправки POST запросов удобнее всего использовать программу [Postman](https://www.postman.com/downloads/).
+
+## База данных
+
+[Imgur](https://i.imgur.com/CDJrb9i.png)

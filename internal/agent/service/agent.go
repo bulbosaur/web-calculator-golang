@@ -18,7 +18,7 @@ func RunAgent() {
 	orcport := viper.GetString("server.ORC_PORT")
 	orchestratorURL := fmt.Sprintf("http://%s:%s", orchost, orcport)
 
-	workers := viper.GetInt("COMPUTINGPOWER")
+	workers := viper.GetInt("worker.COMPUTING_POWER")
 	if workers <= 0 {
 		workers = 1
 	}
@@ -26,6 +26,8 @@ func RunAgent() {
 	for i := 0; i < workers; i++ {
 		go worker(i, orchestratorURL)
 	}
+
+	log.Printf("Starting %d workers", workers)
 
 	select {}
 }
