@@ -12,10 +12,10 @@ func Init() {
 	viper.SetDefault("server.ORC_HOST", "localhost")
 	viper.SetDefault("server.ORC_PORT", "8080")
 
-	viper.SetDefault("time.TIME_ADDITION_MS", 100)
-	viper.SetDefault("time.TIME_SUBTRACTION_MS", 100)
-	viper.SetDefault("time.TIME_MULTIPLICATIONS_MS", 100)
-	viper.SetDefault("time.TIME_DIVISIONS_MS", 100)
+	viper.SetDefault("duration.TIME_ADDITION_MS", 100)
+	viper.SetDefault("duration.TIME_SUBTRACTION_MS", 100)
+	viper.SetDefault("duration.TIME_MULTIPLICATIONS_MS", 100)
+	viper.SetDefault("duration.TIME_DIVISIONS_MS", 100)
 	viper.SetDefault("database.DATABASE_PATH", "./db/calc.db")
 
 	viper.SetConfigName("config")

@@ -76,6 +76,9 @@ time:
   TIME_MULTIPLICATIONS_MS: 100
   TIME_DIVISIONS_MS: 100
 
+worker:
+  COMPUTING_POWER: 5
+  
 database:
   DATABASE_PATH: ./db/calc.db
 ```
@@ -84,12 +87,14 @@ database:
 
 Базовый URL по умолчанию: ```http://localhost:8080```
 
-| API endpoint | Метод | Тело запроса | Ответ сервера | Код ответа |
-|--------------|-------|--------------|---------------|------------|
-| ```/api/v1/calculate``` | ```POST``` | ```{"expression": "2 * 2"}``` | ```{"result":"4"}``` | 200 |
-| ```/api/v1/calculate``` | ```POST``` | ```"expression": "2 * 2"``` | ```{"error":"Bad request","error_message":"invalid request body"}``` | 400 |
-| ```/api/v1/calculate``` | ```GET``` | ```{"expression": "2 * 2"}``` | ```Method Not Allowed``` | 405 |
-| ```/coffee``` | | | ```I'm a teapot``` | 418 |
+| API endpoint             | Метод      | Тело запроса                  | Ответ сервера                                                        | Код ответа |
+|-------------------------|-------------|-------------------------------|----------------------------------------------------------------------|------------|
+| ```/api/v1/calculate``` | ```POST```  | ```{"expression": "2 * 2"}``` | ```{"id":1}```                                                       | 200        |
+| ```/api/v1/calculate``` | ```POST```  | ```"expression": "2 * 2"```   | ```{"error":"Bad request","error_message":"invalid request body"}``` | 400        |
+| ```/api/v1/calculate``` | ```GET```   | ```{"expression": "2 * 2"}``` | ```Method Not Allowed```                                             | 405        |
+|```/internal/task```     |```POST```   |                               |```{"task": {"ID": 3, "ExpressionID": 2, "Arg1": 2, "Arg2": 2, "PrevTaskID1": 0, "PrevTaskID2": 0, "Operation": "*", "Status": "awaiting processing" "Result": 0,}}``` | 200 |
+|```/internal/task/1```   |```GET```    |                               |```{"task": {"ID": 1, "ExpressionID": 1, "Arg1": 2, "Arg2": 3, "PrevTaskID1": 0, "PrevTaskID2": 0, "Operation": "*", "Status": "successfully done", "Result": 6,}}```| 200 |
+| ```/coffee```           |             |                               | ```I'm a teapot```                                                    | 418       |
 | ```/api/v1/tea``` | | | ```404 page not found``` | 404 |
 
 ### Коды ответов
@@ -104,87 +109,3 @@ database:
 ### Примеры работы
 
 Для отправки POST запросов удобнее всего использовать программу [Postman](https://www.postman.com/downloads/).
-
-1. StatusOK 200
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "42 + 5 * 2"
-}'
-
-# {"result":52}
-```
-
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "6-8"
-}'
-
-# {"result":-2}
-```
-
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "123(3/2)"
-}'
-
-# {"result":184.5}
-```
-
-2. Bad Request 400
-
-```bash
-curl 'localhost/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "2 * 2
-}'
-
-# {"error":"Bad request","error_message":"invalid request body"}
-```
-
-3. Unprocessable Entity 422
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "cat + 100500"
-}'
-
-# {"error":"Expression is not valid","error_message":"invalid characters in expression"}
-```
-
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "()"
-}'
-
-# {"error":"Expression is not valid","error_message":"the brackets are empty"}
-```
-
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "1/(2 - 3 + 1)"
-}'
-
-# {"error":"Expression is not valid","error_message":"division by zero is not allowed"}
-```
-
-```bash
-curl 'localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-  "expression": "1 000 000 + 6"
-}'
-
-# {"error":"Expression is not valid","error_message":"missing operand"}
-```
