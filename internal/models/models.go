@@ -22,9 +22,10 @@ type ErrorResponse struct {
 
 // Expression - структура математического выражения
 type Expression struct {
-	ID     int     `json:"id"`
-	Status string  `json:"status"`
-	Result float64 `json:"result"`
+	ID         int     `json:"id"`
+	Expression string  `json:"expression"`
+	Status     string  `json:"status"`
+	Result     float64 `json:"result"`
 }
 
 // RegisteredExpression - структура ответа, возвращаемого при регистрации выражения в оркестраторе

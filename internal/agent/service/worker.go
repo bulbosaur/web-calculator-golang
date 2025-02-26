@@ -14,13 +14,14 @@ func worker(id int, orchestratorURL string) {
 		Mu.Lock()
 
 		task, err := getTask(orchestratorURL)
+
+		Mu.Unlock()
+
 		if err != nil {
 			log.Printf("worker %d: task receiving error: %v", id, err)
 			time.Sleep(interval)
 			continue
 		}
-
-		Mu.Unlock()
 
 		result, err := executeTask(orchestratorURL, task)
 		if err != nil && task.ID != 0 {
