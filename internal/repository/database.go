@@ -4,10 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 )
 
 // InitDB открывает соединение с БД и создаёт необходимые таблицы
 func InitDB(path string) (*sql.DB, error) {
+	dir := filepath.Dir(path)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, fmt.Errorf("failed to create directory %s: %v", dir, err)
+		}
+		log.Printf("Created directory: %s", dir)
+	}
+
 	log.Printf("Database path: %s", path)
 
 	db, err := sql.Open("sqlite", path)
