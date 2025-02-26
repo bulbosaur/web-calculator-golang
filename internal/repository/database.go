@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-// InitDB открывает соединение с БД и создаёт необходимые таблицы
+// InitDB открывает соединение с базой и создаёт необходимые таблицы
 func InitDB(path string) (*sql.DB, error) {
 	dir := filepath.Dir(path)
 
