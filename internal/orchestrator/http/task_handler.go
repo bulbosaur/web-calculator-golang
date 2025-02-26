@@ -22,10 +22,10 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 				return
 			}
 
-			// if task == nil {
-			// 	w.WriteHeader(http.StatusNotFound)
-			// 	return
-			// }
+			if task == nil {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
 
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{"task": task})
