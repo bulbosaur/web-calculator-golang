@@ -20,6 +20,13 @@ type ErrorResponse struct {
 	ErrorMessage string `json:"error_message"`
 }
 
+// Expression - структура математического выражения
+type Expression struct {
+	ID     int     `json:"id"`
+	Status string  `json:"status"`
+	Result float64 `json:"result"`
+}
+
 // RegisteredExpression - структура ответа, возвращаемого при регистрации выражения в оркестраторе
 type RegisteredExpression struct {
 	Id int `json:"id"`

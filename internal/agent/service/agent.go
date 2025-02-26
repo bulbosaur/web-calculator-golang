@@ -23,7 +23,7 @@ func RunAgent() {
 		workers = 1
 	}
 
-	for i := 0; i < workers; i++ {
+	for i := 1; i <= workers; i++ {
 		go worker(i, orchestratorURL)
 	}
 
@@ -48,8 +48,10 @@ func getTask(orchestratorURL string) (*models.Task, error) {
 		return nil, fmt.Errorf("failed to decode task: %w", err)
 	}
 
-	log.Printf("Received task: ID=%d, Arg1=%f, Arg2=%f, PrevTaskID1=%d, PrevTaskID2=%d, Operation=%s",
-		res.Task.ID, res.Task.Arg1, res.Task.Arg2, res.Task.PrevTaskID1, res.Task.PrevTaskID2, res.Task.Operation)
+	if res.Task.ID != 0 {
+		log.Printf("Received task: ID=%d, Arg1=%f, Arg2=%f, PrevTaskID1=%d, PrevTaskID2=%d, Operation=%s",
+			res.Task.ID, res.Task.Arg1, res.Task.Arg2, res.Task.PrevTaskID1, res.Task.PrevTaskID2, res.Task.Operation)
+	}
 
 	return &res.Task, nil
 }

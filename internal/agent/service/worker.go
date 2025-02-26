@@ -2,12 +2,17 @@ package agent
 
 import (
 	"log"
+	"sync"
 	"time"
 )
+
+var Mu sync.Mutex
 
 func worker(id int, orchestratorURL string) {
 	interval := 5 * time.Second
 	for {
+		Mu.Lock()
+
 		task, err := getTask(orchestratorURL)
 		if err != nil {
 			log.Printf("worker %d: task receiving error: %v", id, err)
@@ -15,13 +20,8 @@ func worker(id int, orchestratorURL string) {
 			continue
 		}
 
-		if task == nil {
-			log.Printf("Worker %d: no tasks available", id)
-			time.Sleep(interval)
-			continue
-		}
+		Mu.Unlock()
 
-		log.Printf("Worker %d: received task ID-%d", id, task.ID)
 		result, err := executeTask(orchestratorURL, task)
 		if err != nil {
 			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/bulbosaur/web-calculator-golang/internal/models"
 )
@@ -11,6 +12,7 @@ import (
 // ExpressionModel обертывает пул подключения sql.DB
 type ExpressionModel struct {
 	DB *sql.DB
+	mu sync.Mutex
 }
 
 // NewExpressionModel создает экземпляр ExpressionModel
@@ -77,6 +79,26 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 	}
 
 	return int(id), nil
+}
+
+func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) {
+	query := `
+	SELECT id, status, result
+	FROM expressions
+	WHERE id = ?
+	`
+	var expr models.Expression
+
+	err := e.DB.QueryRow(query, exprID).Scan(
+		&expr.ID,
+		&expr.Status,
+		&expr.Result,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("fail to get expression ID-%d: %v", exprID, err)
+	}
+
+	return &expr, nil
 }
 
 // UpdateExpressionResult обновляет результат и статус выражения
