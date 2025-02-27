@@ -99,7 +99,7 @@ func executeTask(orchestratorURL string, task *models.Task) (float64, error) {
 	case "/":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
 		if arg2 == 0 {
-			return 0, fmt.Errorf("division by zero")
+			return 0, models.ErrorDivisionByZero
 		}
 		return arg1 / arg2, nil
 	default:
@@ -129,10 +129,11 @@ func getTaskResult(orchestratorURL string, taskID int) (float64, error) {
 	return res.Task.Result, nil
 }
 
-func sendResult(orchestratorURL string, taskID int, result float64) error {
+func sendResult(orchestratorURL string, taskID int, result float64, taskErr error) error {
 	payload, err := json.Marshal(map[string]interface{}{
 		"id":     taskID,
 		"result": result,
+		"error":  taskErr,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %w", err)

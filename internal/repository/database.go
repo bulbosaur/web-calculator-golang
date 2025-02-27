@@ -31,7 +31,8 @@ func InitDB(path string) (*sql.DB, error) {
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   expression TEXT NOT NULL,
   status TEXT NOT NULL,
-  result TEXT
+  result TEXT,
+  error TEXT
  );`
 	_, err = db.Exec(createExpressions)
 	if err != nil {
@@ -48,7 +49,9 @@ func InitDB(path string) (*sql.DB, error) {
   prev_task_id2 INTEGER DEFAULT 0,
   operation TEXT NOT NULL,
   status TEXT,
-  result FLOAT
+  result FLOAT,
+  error TEXT,
+  FOREIGN KEY (expressionID) REFERENCES expressions(id)
  );`
 	_, err = db.Exec(createTasks)
 	if err != nil {

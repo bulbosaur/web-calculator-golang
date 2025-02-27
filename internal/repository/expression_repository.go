@@ -102,13 +102,13 @@ func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) 
 }
 
 // UpdateExpressionResult обновляет результат и статус выражения
-func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64) error {
+func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64, exprErr error) error {
 	query := `
         UPDATE expressions 
-        SET result = ?, status = ? 
+        SET result = ?, status = ?, error = ? 
         WHERE id = ?
     `
-	_, err := e.DB.Exec(query, result, models.StatusResolved, exprID)
+	_, err := e.DB.Exec(query, result, models.StatusResolved, exprErr, exprID)
 	if err != nil {
 		return fmt.Errorf("failed to update expression result: %v", err)
 	}
