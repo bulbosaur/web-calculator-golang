@@ -43,7 +43,7 @@ func regHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 		}
 
 		response := models.RegisteredExpression{
-			Id: id,
+			ID: id,
 		}
 
 		w.WriteHeader(http.StatusOK)

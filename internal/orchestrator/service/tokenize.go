@@ -96,7 +96,7 @@ func addMissingOperand(expression []models.Token) []models.Token {
 		result = append(result, token)
 
 		if i+1 < len(expression) {
-			if token.IsNumber && expression[i+1].Value == "(" {
+			if (token.IsNumber || token.Value == ")") && expression[i+1].Value == "(" {
 				result = append(result, models.Token{Value: "*", IsNumber: false})
 			}
 			if token.Value == ")" && expression[i+1].IsNumber {

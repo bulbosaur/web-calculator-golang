@@ -30,7 +30,7 @@ type Expression struct {
 
 // RegisteredExpression - структура ответа, возвращаемого при регистрации выражения в оркестраторе
 type RegisteredExpression struct {
-	Id int `json:"id"`
+	ID int `json:"id"`
 }
 
 // Request - структура запроса

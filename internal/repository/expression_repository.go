@@ -81,6 +81,7 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 	return int(id), nil
 }
 
+// GetExpression возвращает из базы данных соответствующее выражение
 func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) {
 	query := `
 	SELECT id, status, result

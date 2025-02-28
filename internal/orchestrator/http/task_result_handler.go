@@ -14,7 +14,7 @@ func taskResultHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
-		intId, err := strconv.Atoi(id)
+		intID, err := strconv.Atoi(id)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(models.ErrorResponse{
@@ -24,7 +24,7 @@ func taskResultHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 			return
 		}
 
-		task, err := exprRepo.GetTaskByID(intId)
+		task, err := exprRepo.GetTaskByID(intID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(models.ErrorResponse{

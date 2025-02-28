@@ -99,7 +99,7 @@ func executeTask(orchestratorURL string, task *models.Task) (float64, error) {
 	case "/":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
 		if arg2 == 0 {
-			return 0, fmt.Errorf("division by zero")
+			return 0, models.ErrorDivisionByZero
 		}
 		return arg1 / arg2, nil
 	default:

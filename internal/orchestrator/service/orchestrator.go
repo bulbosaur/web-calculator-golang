@@ -26,6 +26,7 @@ func Calc(stringExpression string, id int, taskRepo *repository.ExpressionModel)
 	return nil
 }
 
+// NewTask создает экземпляр структуры Task
 func NewTask(id int, arg1, arg2 float64, operation string) *models.Task {
 	newTask := models.Task{
 		ExpressionID: id,

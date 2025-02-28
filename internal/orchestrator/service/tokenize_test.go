@@ -53,9 +53,13 @@ func TestTokenize(t *testing.T) {
 			wantError:  nil,
 		},
 		{
-			expression: "2 * (3 + 4)",
+			expression: "(2 - 5)(3 + 4)",
 			wantOutput: []models.Token{
+				{"(", false},
 				{"2", true},
+				{"-", false},
+				{"5", true},
+				{")", false},
 				{"*", false},
 				{"(", false},
 				{"3", true},

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Mu - мьютекс в рамках микросервиса данного агента
 var Mu sync.Mutex
 
 func worker(id int, orchestratorURL string) {
