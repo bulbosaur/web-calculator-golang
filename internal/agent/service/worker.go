@@ -24,15 +24,15 @@ func worker(id int, orchestratorURL string) {
 			continue
 		}
 
-		result, err := executeTask(orchestratorURL, task)
-		if err != nil && task.ID != 0 {
+		result, ErrorMessage := executeTask(orchestratorURL, task)
+		if ErrorMessage != nil && task.ID != 0 {
 			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)
 			time.Sleep(interval)
 			continue
 		}
 
 		if task.ID != 0 {
-			err = sendResult(orchestratorURL, task.ID, result)
+			err = sendResult(orchestratorURL, task.ID, result, ErrorMessage)
 			if err != nil {
 				log.Printf("Worker %d: sending error task ID-%d: %v", id, task.ID, err)
 			} else {

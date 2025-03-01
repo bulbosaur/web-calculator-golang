@@ -149,7 +149,7 @@ func TestSendResult(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	err := sendResult(ts.URL, 1, 42)
+	err := sendResult(ts.URL, 1, 42, nil)
 
 	if err != nil {
 		t.Fatalf("Ожидалось отсутствие ошибки, но получили: %v", err)

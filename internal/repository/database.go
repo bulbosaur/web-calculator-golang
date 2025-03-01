@@ -31,7 +31,8 @@ func InitDB(path string) (*sql.DB, error) {
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   expression TEXT NOT NULL,
   status TEXT NOT NULL,
-  result TEXT
+  result TEXT,
+  error_message TEXT
  );`
 	_, err = db.Exec(createExpressions)
 	if err != nil {

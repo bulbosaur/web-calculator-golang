@@ -129,10 +129,11 @@ func getTaskResult(orchestratorURL string, taskID int) (float64, error) {
 	return res.Task.Result, nil
 }
 
-func sendResult(orchestratorURL string, taskID int, result float64) error {
+func sendResult(orchestratorURL string, taskID int, result float64, errorMessage error) error {
 	payload, err := json.Marshal(map[string]interface{}{
 		"id":     taskID,
 		"result": result,
+		"error":  errorMessage,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %w", err)
