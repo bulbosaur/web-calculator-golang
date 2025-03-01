@@ -46,6 +46,7 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 
 			err = exprRepo.UpdateTaskResult(req.ID, req.Result, req.ErrorMessage)
 			if err != nil {
+				log.Print("error updating task result:", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
