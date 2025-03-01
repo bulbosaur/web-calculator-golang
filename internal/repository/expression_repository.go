@@ -36,32 +36,37 @@ func (e *ExpressionModel) AreAllTasksCompleted(exprID int) (bool, error) {
 }
 
 // CalculateExpressionResult выбирает результаты всех тасок задачи и возвращает итоговый
-func (e *ExpressionModel) CalculateExpressionResult(exprID int) (float64, error) {
+func (e *ExpressionModel) CalculateExpressionResult(exprID int) (float64, string, error) {
 	query := `
-        SELECT result 
+        SELECT result, error_message
         FROM tasks 
         WHERE expressionID = ? AND status = ?
     `
 	rows, err := e.DB.Query(query, exprID, models.StatusResolved)
 	if err != nil {
-		return 0, fmt.Errorf("failed to query tasks: %v", err)
+		return 0, "", fmt.Errorf("failed to query tasks: %v", err)
 	}
 	defer rows.Close()
 
 	var results []float64
 	for rows.Next() {
 		var result float64
-		if err := rows.Scan(&result); err != nil {
-			return 0, fmt.Errorf("failed to scan task result: %v", err)
+		var errorMessage string
+		err := rows.Scan(&result, &errorMessage)
+		if err != nil {
+			return 0, "", fmt.Errorf("failed to scan task result: %v", err)
+		}
+		if errorMessage != "" {
+			return 0, errorMessage, nil
 		}
 		results = append(results, result)
 	}
 
 	if len(results) == 0 {
-		return 0, fmt.Errorf("no completed tasks found for expression ID %d", exprID)
+		return 0, "", fmt.Errorf("no completed tasks found for expression ID %d", exprID)
 	}
 
-	return results[len(results)-1], nil
+	return results[len(results)-1], "", nil
 }
 
 // Insert записывает мат выражение в таблицу БД
@@ -103,16 +108,23 @@ func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) 
 }
 
 // UpdateExpressionResult обновляет результат и статус выражения
-func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64) error {
+func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64, errorMessage string) error {
+	var status string = models.StatusResolved
+
+	if errorMessage != "" {
+		status = models.StatusFailed
+	}
 	query := `
         UPDATE expressions 
-        SET result = ?, status = ? 
+        SET result = ?, status = ?, error_message = ?
         WHERE id = ?
     `
-	_, err := e.DB.Exec(query, result, models.StatusResolved, exprID)
+	_, err := e.DB.Exec(query, result, status, errorMessage, exprID)
 	if err != nil {
 		return fmt.Errorf("failed to update expression result: %v", err)
 	}
+
+	log.Printf("update result for expression ID-%d: %v\nerror message: %v", exprID, result, errorMessage)
 	return nil
 }
 

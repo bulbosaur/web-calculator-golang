@@ -89,7 +89,7 @@ func TestExecuteTask(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run("", func(t *testing.T) {
-			result, err := executeTask("http://dummy.url", &tc.task)
+			result, _, err := executeTask("http://dummy.url", &tc.task)
 
 			if tc.expectErr {
 				if err == nil {
@@ -149,7 +149,7 @@ func TestSendResult(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	err := sendResult(ts.URL, 1, 42, nil)
+	err := sendResult(ts.URL, 1, 42, "")
 
 	if err != nil {
 		t.Fatalf("Ожидалось отсутствие ошибки, но получили: %v", err)

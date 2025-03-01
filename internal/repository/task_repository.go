@@ -148,12 +148,12 @@ func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64) error {
 	}
 
 	if completed {
-		finalResult, err := e.CalculateExpressionResult(exprID)
+		finalResult, errorMessage, err := e.CalculateExpressionResult(exprID)
 		if err != nil {
 			return fmt.Errorf("failed to calculate expression result: %v", err)
 		}
 
-		err = e.UpdateExpressionResult(exprID, finalResult)
+		err = e.UpdateExpressionResult(exprID, finalResult, errorMessage)
 		if err != nil {
 			return fmt.Errorf("failed to update expression result: %v", err)
 		}
