@@ -125,11 +125,12 @@ func (e *ExpressionModel) UpdateTaskStatus(taskID int, status string) {
 }
 
 // UpdateTaskResult обновляет результат таски в базе и если все остальные действия выраженрия выполены, пишет окончательный ответ
-func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64) error {
+func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64, errorMessage string) error {
 	_, err := e.DB.Exec(
-		"UPDATE tasks SET status = ?, result = ? WHERE id = ?",
+		"UPDATE tasks SET status = ?, result = ?, error_message = ? WHERE id = ?",
 		models.StatusResolved,
 		result,
+		errorMessage,
 		taskID,
 	)
 	if err != nil {

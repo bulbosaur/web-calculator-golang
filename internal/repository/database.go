@@ -49,7 +49,9 @@ func InitDB(path string) (*sql.DB, error) {
   prev_task_id2 INTEGER DEFAULT 0,
   operation TEXT NOT NULL,
   status TEXT,
-  result FLOAT
+  result FLOAT,
+  error_message TEXT,
+  FOREIGN KEY(expressionID) REFERENCES expressions(id)
  );`
 	_, err = db.Exec(createTasks)
 	if err != nil {
