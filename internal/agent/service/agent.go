@@ -134,6 +134,7 @@ func sendResult(orchestratorURL string, taskID int, result float64, errorMessage
 		"id":            taskID,
 		"result":        result,
 		"error_message": errorMessage,
+
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %w", err)
