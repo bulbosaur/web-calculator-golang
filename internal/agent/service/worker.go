@@ -4,6 +4,8 @@ import (
 	"log"
 	"sync"
 	"time"
+
+	"github.com/bulbosaur/web-calculator-golang/internal/models"
 )
 
 // Mu - мьютекс в рамках микросервиса данного агента
@@ -25,7 +27,7 @@ func worker(id int, orchestratorURL string) {
 		}
 
 		result, ErrorMessage := executeTask(orchestratorURL, task)
-		if ErrorMessage != nil && task.ID != 0 {
+		if ErrorMessage != nil && ErrorMessage != models.ErrorDivisionByZero && task.ID != 0 {
 			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)
 			time.Sleep(interval)
 			continue

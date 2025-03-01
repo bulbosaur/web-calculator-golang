@@ -133,7 +133,7 @@ func sendResult(orchestratorURL string, taskID int, result float64, errorMessage
 	payload, err := json.Marshal(map[string]interface{}{
 		"id":     taskID,
 		"result": result,
-		"error":  errorMessage,
+		"error":  errorMessage.Error(),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %w", err)
@@ -144,6 +144,8 @@ func sendResult(orchestratorURL string, taskID int, result float64, errorMessage
 		return fmt.Errorf("failed to send result: %w", err)
 	}
 	defer resp.Body.Close()
+
+	log.Printf("payload: %s", payload)
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("orchestrator returned status code %d", resp.StatusCode)

@@ -7,7 +7,7 @@ var (
 	ErrorCreatingDatabaseRecord = errors.New("an error occurred while writing an expression to the database")
 
 	// ErrorDivisionByZero - ошибка деления на ноль
-	ErrorDivisionByZero = errors.New("division by zero is not allowed")
+	ErrorDivisionByZero = errors.New("division by zero")
 
 	// ErrorEmptyBrackets - пустые скобочки
 	ErrorEmptyBrackets = errors.New("the brackets are empty")
