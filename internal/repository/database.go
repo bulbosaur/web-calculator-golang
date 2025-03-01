@@ -32,7 +32,7 @@ func InitDB(path string) (*sql.DB, error) {
   expression TEXT NOT NULL,
   status TEXT NOT NULL,
   result TEXT,
-  error_message TEXT
+  error_message TEXT DEFAULT ""
  );`
 	_, err = db.Exec(createExpressions)
 	if err != nil {
@@ -50,7 +50,7 @@ func InitDB(path string) (*sql.DB, error) {
   operation TEXT NOT NULL,
   status TEXT,
   result FLOAT,
-  error_message TEXT
+  error_message TEXT DEFAULT ""
  );`
 	_, err = db.Exec(createTasks)
 	if err != nil {
