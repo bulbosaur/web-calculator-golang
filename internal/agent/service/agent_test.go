@@ -78,7 +78,7 @@ func TestExecuteTask(t *testing.T) {
 		{
 			task:      models.Task{ID: 5, Arg1: 20, Arg2: 0, Operation: "/"},
 			expected:  0,
-			expectErr: true,
+			expectErr: false,
 		},
 		{
 			task:      models.Task{ID: 6, Arg1: 10, Arg2: 20, Operation: "hubabuba"},

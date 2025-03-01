@@ -53,28 +53,20 @@ func tokenize(expression string) ([]models.Token, error) {
 		number = ""
 	}
 
-	if !checkMissingOperand(tokens) {
-		return nil, models.ErrorMissingOperand
-	}
-
 	if !checkEmptyBrackets(tokens) {
 		return nil, models.ErrorEmptyBrackets
 	}
 
+	if !checkMissingOperand(tokens) {
+		return nil, models.ErrorMissingOperand
+	}
+
+	if !checkMissingNumber(tokens) {
+		return nil, models.ErrorInvalidInput
+	}
+
 	result := addMissingOperand(tokens)
 	return result, nil
-}
-
-func checkMissingOperand(tokens []models.Token) bool {
-	for i, token := range tokens {
-		if i == len(tokens)-1 {
-			break
-		}
-		if token.IsNumber && tokens[i+1].IsNumber {
-			return false
-		}
-	}
-	return true
 }
 
 func checkEmptyBrackets(tokens []models.Token) bool {
@@ -89,6 +81,29 @@ func checkEmptyBrackets(tokens []models.Token) bool {
 	return true
 }
 
+func checkMissingOperand(tokens []models.Token) bool {
+	for i, token := range tokens {
+		if i == len(tokens)-1 {
+			break
+		}
+		if token.IsNumber && tokens[i+1].IsNumber {
+			return false
+		}
+	}
+	return true
+}
+
+func checkMissingNumber(tokens []models.Token) bool {
+	for i, token := range tokens {
+		if i == len(tokens)-1 {
+			break
+		}
+		if !token.IsNumber && !tokens[i+1].IsNumber && token.Value != ")" && tokens[i+1].Value != "(" {
+			return false
+		}
+	}
+	return true
+}
 func addMissingOperand(expression []models.Token) []models.Token {
 	var result []models.Token
 
