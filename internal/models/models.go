@@ -8,7 +8,7 @@ var (
 	StatusFailed = "failed"
 
 	// StatusResolved указывает в БД, что результат выражения подсчитан успешно
-	StatusResolved = "successfully done"
+	StatusResolved = "done"
 
 	// StatusWait указывает на те выражения в БД, результат которых еще не подсчитан
 	StatusWait = "awaiting processing"

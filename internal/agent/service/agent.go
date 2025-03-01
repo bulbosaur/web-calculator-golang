@@ -56,9 +56,9 @@ func getTask(orchestratorURL string) (*models.Task, error) {
 	return &res.Task, nil
 }
 
-func executeTask(orchestratorURL string, task *models.Task) (float64, error) {
+func executeTask(orchestratorURL string, task *models.Task) (float64, string, error) {
 	if task == nil || task.ID == 0 {
-		return 0, fmt.Errorf("invalid task: task is nil or has ID 0")
+		return 0, "", fmt.Errorf("invalid task: task is nil or has ID 0")
 	}
 
 	var arg1, arg2 float64
@@ -67,7 +67,7 @@ func executeTask(orchestratorURL string, task *models.Task) (float64, error) {
 	if task.PrevTaskID1 != 0 {
 		arg1, err = getTaskResult(orchestratorURL, task.PrevTaskID1)
 		if err != nil {
-			return 0, fmt.Errorf("failed to get result for PrevTaskID1 (%d): %v", task.PrevTaskID1, err)
+			return 0, "", fmt.Errorf("failed to get result for PrevTaskID1 (%d): %v", task.PrevTaskID1, err)
 		}
 	} else {
 		arg1 = task.Arg1
@@ -76,34 +76,34 @@ func executeTask(orchestratorURL string, task *models.Task) (float64, error) {
 	if task.PrevTaskID2 != 0 {
 		arg2, err = getTaskResult(orchestratorURL, task.PrevTaskID2)
 		if err != nil {
-			return 0, fmt.Errorf("failed to get result for PrevTaskID2 (%d): %v", task.PrevTaskID2, err)
+			return 0, "", fmt.Errorf("failed to get result for PrevTaskID2 (%d): %v", task.PrevTaskID2, err)
 		}
 	} else {
 		arg2 = task.Arg2
 	}
 
 	if task.Operation == "" {
-		return 0, fmt.Errorf("invalid operation: operation is empty")
+		return 0, "", fmt.Errorf("invalid operation: operation is empty")
 	}
 
 	switch task.Operation {
 	case "+":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_ADDITION_MS")) * time.Millisecond)
-		return arg1 + arg2, nil
+		return arg1 + arg2, "", nil
 	case "-":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_SUBTRACTION_MS")) * time.Millisecond)
-		return arg1 - arg2, nil
+		return arg1 - arg2, "", nil
 	case "*":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_MULTIPLICATIONS_MS")) * time.Millisecond)
-		return arg1 * arg2, nil
+		return arg1 * arg2, "", nil
 	case "/":
 		time.Sleep(time.Duration(viper.GetInt("duration.TIME_DIVISIONS_MS")) * time.Millisecond)
 		if arg2 == 0 {
-			return 0, models.ErrorDivisionByZero
+			return 0, models.ErrorDivisionByZero.Error(), nil
 		}
-		return arg1 / arg2, nil
+		return arg1 / arg2, "", nil
 	default:
-		return 0, fmt.Errorf("invalid operation: %s", task.Operation)
+		return 0, "", fmt.Errorf("invalid operation: %s", task.Operation)
 	}
 }
 
@@ -129,11 +129,12 @@ func getTaskResult(orchestratorURL string, taskID int) (float64, error) {
 	return res.Task.Result, nil
 }
 
-func sendResult(orchestratorURL string, taskID int, result float64, errorMessage error) error {
+func sendResult(orchestratorURL string, taskID int, result float64, errorMessage string) error {
 	payload, err := json.Marshal(map[string]interface{}{
-		"id":     taskID,
-		"result": result,
-		"error":  errorMessage.Error(),
+		"id":            taskID,
+		"result":        result,
+		"error_message": errorMessage,
+
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %w", err)

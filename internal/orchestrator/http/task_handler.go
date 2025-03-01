@@ -34,8 +34,9 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 
 		case http.MethodPost:
 			var req struct {
-				ID     int     `json:"id"`
-				Result float64 `json:"result"`
+				ID           int     `json:"id"`
+				Result       float64 `json:"result"`
+				ErrorMessage string  `json:"error_message"`
 			}
 			err := json.NewDecoder(r.Body).Decode(&req)
 			if err != nil {
@@ -43,8 +44,9 @@ func taskHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 				return
 			}
 
-			err = exprRepo.UpdateTaskResult(req.ID, req.Result)
+			err = exprRepo.UpdateTaskResult(req.ID, req.Result, req.ErrorMessage)
 			if err != nil {
+				log.Print("error updating task result:", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
