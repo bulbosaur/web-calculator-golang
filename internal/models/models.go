@@ -41,7 +41,7 @@ type Request struct {
 
 // Response - струтура ответа после успешного завершения программы
 type Response struct {
-	Result float64 `json:"result"`
+	Expression Expression `json:"expression"`
 }
 
 // Task описывает задачу для выполнения

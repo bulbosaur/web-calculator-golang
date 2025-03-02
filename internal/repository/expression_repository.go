@@ -73,7 +73,7 @@ func (e *ExpressionModel) CalculateExpressionResult(exprID int) (float64, string
 func (e *ExpressionModel) Insert(expression string) (int, error) {
 	query := "INSERT INTO expressions (expression, status, result) VALUES (?, ?, ?)"
 
-	result, err := e.DB.Exec(query, expression, models.StatusWait, "")
+	result, err := e.DB.Exec(query, expression, models.StatusWait, 0)
 	if err != nil {
 		return 0, fmt.Errorf("%w: %v", models.ErrorCreatingDatabaseRecord, err)
 	}
@@ -89,7 +89,7 @@ func (e *ExpressionModel) Insert(expression string) (int, error) {
 // GetExpression возвращает из базы данных соответствующее выражение
 func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) {
 	query := `
-	SELECT id, status, result
+	SELECT id, expression, status, result, error_message
 	FROM expressions
 	WHERE id = ?
 	`
@@ -97,8 +97,10 @@ func (e *ExpressionModel) GetExpression(exprID int) (*models.Expression, error) 
 
 	err := e.DB.QueryRow(query, exprID).Scan(
 		&expr.ID,
+		&expr.Expression,
 		&expr.Status,
 		&expr.Result,
+		&expr.ErrorMessage,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("fail to get expression ID-%d: %v", exprID, err)
