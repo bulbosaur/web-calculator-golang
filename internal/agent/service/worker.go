@@ -6,14 +6,13 @@ import (
 	"time"
 )
 
-var (
-	// Mu - мьютекс в рамках микросервиса данного агента
-	Mu  sync.Mutex
-	sem = make(chan struct{}, Workers)
-)
+// Mu - мьютекс в рамках микросервиса данного агента
+var Mu sync.Mutex
 
 func worker(id int, orchestratorURL string) {
+	sem := make(chan struct{}, Workers)
 	interval := 1 * time.Second
+
 	for {
 		sem <- struct{}{}
 		Mu.Lock()

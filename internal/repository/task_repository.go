@@ -140,7 +140,7 @@ func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64, errorMess
 	if errorMessage != "" {
 		log.Printf("update task ID-%d: %v\nerror message: %v", taskID, result, errorMessage)
 	} else {
-		log.Printf("update result for expression ID-%d: %v", taskID, result)
+		log.Printf("update result for task ID-%d: %v", taskID, result)
 	}
 
 	var exprID int
