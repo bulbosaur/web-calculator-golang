@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Workers - переменная, в которой хранится количество одновременно работающих воркеров
 var Workers int
 
 // RunAgent запускает агента
