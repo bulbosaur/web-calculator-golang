@@ -8,10 +8,12 @@ import (
 
 // Mu - мьютекс в рамках микросервиса данного агента
 var Mu sync.Mutex
+var sem = make(chan struct{}, 10)
 
 func worker(id int, orchestratorURL string) {
 	interval := 1 * time.Second
 	for {
+		sem <- struct{}{}
 		Mu.Lock()
 
 		task, err := getTask(orchestratorURL)
@@ -21,6 +23,7 @@ func worker(id int, orchestratorURL string) {
 		if err != nil {
 			log.Printf("worker %d: task receiving error: %v", id, err)
 			time.Sleep(interval)
+			<-sem
 			continue
 		}
 
@@ -28,6 +31,7 @@ func worker(id int, orchestratorURL string) {
 		if err != nil && task.ID != 0 {
 			log.Printf("Worker %d: execution error task ID-%d: %v", id, task.ID, err)
 			time.Sleep(interval)
+			<-sem
 			continue
 		}
 
@@ -40,6 +44,7 @@ func worker(id int, orchestratorURL string) {
 			}
 		}
 
+		<-sem
 		time.Sleep(interval)
 	}
 }
