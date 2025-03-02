@@ -137,7 +137,11 @@ func (e *ExpressionModel) UpdateTaskResult(taskID int, result float64, errorMess
 		return err
 	}
 
-	log.Printf("update task ID-%v result: %v, error: %v", taskID, result, errorMessage)
+	if errorMessage != "" {
+		log.Printf("update task ID-%d: %v\nerror message: %v", taskID, result, errorMessage)
+	} else {
+		log.Printf("update result for expression ID-%d: %v", taskID, result)
+	}
 
 	var exprID int
 	err = e.DB.QueryRow("SELECT expressionID FROM tasks WHERE id = ?", taskID).Scan(&exprID)

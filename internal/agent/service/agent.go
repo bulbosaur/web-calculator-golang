@@ -12,22 +12,24 @@ import (
 	"github.com/spf13/viper"
 )
 
+var Workers int
+
 // RunAgent запускает агента
 func RunAgent() {
 	orchost := viper.GetString("server.ORC_HOST")
 	orcport := viper.GetString("server.ORC_PORT")
 	orchestratorURL := fmt.Sprintf("http://%s:%s", orchost, orcport)
 
-	workers := viper.GetInt("worker.COMPUTING_POWER")
-	if workers <= 0 {
-		workers = 1
+	Workers = viper.GetInt("worker.COMPUTING_POWER")
+	if Workers <= 0 {
+		Workers = 1
 	}
 
-	for i := 1; i <= workers; i++ {
+	for i := 1; i <= Workers; i++ {
 		go worker(i, orchestratorURL)
 	}
 
-	log.Printf("Starting %d workers", workers)
+	log.Printf("Starting %d workers", Workers)
 
 	select {}
 }

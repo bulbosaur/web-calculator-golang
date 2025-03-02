@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+	log.Println("Starting server...")
+
 	config.Init()
 
 	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))

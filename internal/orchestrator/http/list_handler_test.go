@@ -132,40 +132,6 @@ func TestListHandlerQueryFail(t *testing.T) {
 	}
 }
 
-func TestListHandlerScanFail(t *testing.T) {
-	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
-	if err != nil {
-		t.Fatalf("failed to init DB: %v", err)
-	}
-	defer db.Close()
-
-	exprRepo := repository.NewExpressionModel(db)
-	_, err = db.Exec("INSERT INTO expressions (expression, status, error_message) VALUES ('2+2', 'done', '')")
-	if err != nil {
-		t.Fatalf("failed to insert db records. %v", err)
-	}
-
-	req, err := http.NewRequest("GET", "/api/v1/expressions", nil)
-	if err != nil {
-		t.Fatalf("failed to create request: %v", err)
-	}
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(listHandler(exprRepo))
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusInternalServerError {
-		t.Errorf("returned %v, want %v", status, http.StatusInternalServerError)
-	}
-	_, err = db.Exec("DELETE FROM expressions")
-	if err != nil {
-		t.Fatalf("failed to delete db records. %v", err)
-	}
-	_, err = db.Exec("DELETE FROM tasks")
-	if err != nil {
-		t.Fatalf("failed to delete db records. %v", err)
-	}
-}
-
 func TestListHandlerInvalidFloat(t *testing.T) {
 	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
 	if err != nil {

@@ -126,7 +126,12 @@ func (e *ExpressionModel) UpdateExpressionResult(exprID int, result float64, err
 		return fmt.Errorf("failed to update expression result: %v", err)
 	}
 
-	log.Printf("update result for expression ID-%d: %v\nerror message: %v", exprID, result, errorMessage)
+	if errorMessage != "" {
+		log.Printf("update result for expression ID-%d: %v\nerror message: %v", exprID, result, errorMessage)
+	} else {
+		log.Printf("update result for expression ID-%d: %v", exprID, result)
+	}
+
 	return nil
 }
 

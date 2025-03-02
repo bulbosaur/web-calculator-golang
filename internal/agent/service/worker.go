@@ -6,9 +6,11 @@ import (
 	"time"
 )
 
-// Mu - мьютекс в рамках микросервиса данного агента
-var Mu sync.Mutex
-var sem = make(chan struct{}, 10)
+var (
+	// Mu - мьютекс в рамках микросервиса данного агента
+	Mu  sync.Mutex
+	sem = make(chan struct{}, Workers)
+)
 
 func worker(id int, orchestratorURL string) {
 	interval := 1 * time.Second
