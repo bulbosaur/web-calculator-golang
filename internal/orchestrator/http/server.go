@@ -18,6 +18,7 @@ func RunOrchestrator(exprRepo *repository.ExpressionModel) {
 
 	router := mux.NewRouter()
 
+	router.HandleFunc("/", indexHandler)
 	router.HandleFunc("/api/v1/calculate", regHandler(exprRepo)).Methods("POST")
 	router.HandleFunc("/api/v1/expressions", listHandler(exprRepo)).Methods("GET")
 	router.HandleFunc("/api/v1/expressions/{id}", resultHandler(exprRepo)).Methods("GET")
