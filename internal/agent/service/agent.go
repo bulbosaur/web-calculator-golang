@@ -27,6 +27,7 @@ func RunAgent() {
 	}
 
 	for i := 1; i <= Workers; i++ {
+		log.Printf("Starting worker %d", i)
 		go worker(i, orchestratorURL)
 	}
 
