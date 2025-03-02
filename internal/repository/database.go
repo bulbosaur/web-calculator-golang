@@ -21,10 +21,18 @@ func InitDB(path string) (*sql.DB, error) {
 
 	log.Printf("Database path: %s", path)
 
-	db, err := sql.Open("sqlite", path)
+	dsn := fmt.Sprintf("file:%s?_journal_mode=WAL&_sync=NORMAL&_foreign_keys=ON", path)
+	// log.Printf("Database DSN: %s", dsn)
+	db, err := sql.Open("sqlite", dsn)
+	// db, err := sql.Open("sqlite", path)
+
 	if err != nil {
 		return nil, fmt.Errorf("error when opening database: %v", err)
 	}
+
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(1)
+	db.SetConnMaxLifetime(0)
 
 	createExpressions := `
  CREATE TABLE IF NOT EXISTS expressions (
