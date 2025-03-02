@@ -123,7 +123,7 @@ database:
 
 ## База данных
 
-<img src="https://i.imgur.com/CDJrb9i.png" alt="Схема БД" width="1000">
+<img src="https://i.imgur.com/CDJrb9i.png" alt="Схема БД" width="1500">
 
 ## Тестирование
 
