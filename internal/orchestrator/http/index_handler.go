@@ -40,7 +40,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 </head>
 <body>
   <div class="container">
-    <h1>Calculator API Interface</h1>
+    <h1>Web-calculator-golang API</h1>
     
     
     <form id="calculateForm">
