@@ -58,7 +58,7 @@ git clone https://github.com/bulbosaur/web-calculator-golang
 ```bash
 go run ./cmd/orchestrator/main.go
 ```
-Дождитесь запуска сервера, при первом запуске это может занять некоторое время:
+Дождитесь запуска сервера, при первом старте это может занять довольно много времени:
 
 ```bash
 2025/01/01 00:00:00 Starting server...
@@ -85,7 +85,7 @@ go run ./cmd/agent/main.go
 |```DURATION_TIME_SUBTRACTION_MS```      | Время выполнения операции вычитания в миллисекундах | 100                   |
 | ```DURATION_TIME_MULTIPLICATIONS_MS``` | Время выполнения операции умножения в миллисекундах | 100                   |
 | ```DURATION_TIME_DIVISIONS_MS```       | Время выполнения операции деления в миллисекундах   | 100                   |
-| ```DATABASE_PATH```                    | Путь к базе данных                                  |                       |
+| ```DATABASE_PATH```                    | Путь к базе данных                                  |./db/calc.db           |
 | ```WORKER_COMPUTING_POWER```           | Количество горутин, выполняющих вычисления          | 5                     |
 
 Задать новые переменные окружения можно в **PowerShell** перед запуском программы:
