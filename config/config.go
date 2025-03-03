@@ -20,6 +20,7 @@ func Init() {
 	viper.SetDefault("duration.TIME_MULTIPLICATIONS_MS", 100)
 	viper.SetDefault("duration.TIME_DIVISIONS_MS", 100)
 	viper.SetDefault("DATABASE_PATH", "./db/calc.db")
+	viper.SetDefault("worker.COMPUTING_POWER", 5)
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

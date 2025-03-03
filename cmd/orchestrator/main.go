@@ -16,7 +16,7 @@ func main() {
 
 	config.Init()
 
-	db, err := repository.InitDB(viper.GetString("database.DATABASE_PATH"))
+	db, err := repository.InitDB(viper.GetString("DATABASE_PATH"))
 	if err != nil {
 		log.Fatalf("failed to init DB; %v", err)
 	}

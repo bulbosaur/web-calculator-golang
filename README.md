@@ -76,6 +76,7 @@ go run ./cmd/agent/main.go
 | ```DURATION_TIME_MULTIPLICATIONS_MS``` | Время выполнения операции умножения в миллисекундах | 100                   |
 | ```DURATION_TIME_DIVISIONS_MS```       | Время выполнения операции деления в миллисекундах   | 100                   |
 | ```DATABASE_PATH```                    | Путь к базе данных                                  |                       |
+| ```WORKER_COMPUTING_POWER```           | Количество горутин, выполняющих вычисления          | 5                     |
 
 Задать новые переменные окружения можно в **PowerShell** перед запуском программы:
 
@@ -89,6 +90,8 @@ $env:DURATION_TIME_MULTIPLICATIONS_MS = "300"
 $env:DURATION_TIME_DIVISIONS_MS      = "300"
 
 $env:DATABASE_PATH = "/path/to/database.db"
+
+$env:WORKER_COMPUTING_POWER = "1"
 ```
 
 Команды установки переменных окружения в терминале для **Linux/MacOS**:
@@ -101,6 +104,7 @@ export DURATION_TIME_SUBTRACTION_MS=300
 export DURATION_TIME_MULTIPLICATIONS_MS=300
 export DURATION_TIME_DIVISIONS_MS=300
 export DATABASE_PATH=/path/to/database.db
+export WORKER_COMPUTING_POWER=1
 ```
 
 Для **Windows** (CMD):
@@ -113,6 +117,7 @@ export DATABASE_PATH=/path/to/database.db
    set DURATION_TIME_MULTIPLICATIONS_MS=300
    set DURATION_TIME_DIVISIONS_MS=300
    set DATABASE_DATABASE_PATH=C:\path\to\database.db
+   set WORKER_COMPUTING_POWER=1
 ```
 
 ## Публичный API
