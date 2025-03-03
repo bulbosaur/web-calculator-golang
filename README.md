@@ -15,7 +15,7 @@
   - Отправляет вычисленный результат обратно на оркестратор
 
 ### Архитектура
-<img src="./img/image.png" alt="Схема проекта" width="1000">
+<img src="./img/image2.png" alt="Схема проекта" width="1000">
 
 ## Функционал
 
@@ -139,7 +139,8 @@ database:
         "prev_task_id2": 0,
         "operation": "+",
         "status": "wait",
-        "result": 0.0
+        "result": 0.0,
+        "error_message": ""
       }
     }
     ```
@@ -173,7 +174,7 @@ database:
 
 ## База данных
 
-<img src="https://i.imgur.com/CDJrb9i.png" alt="Схема БД" width="1500">
+<img src="./img/image.png" alt="Схема БД" width="1500">
 
 ## Тестирование
 
