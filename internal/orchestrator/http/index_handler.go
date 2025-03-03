@@ -9,7 +9,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculator API Interface</title>
+  <title>Web-calculator-golang API</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,13 +40,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 </head>
 <body>
   <div class="container">
-    <h1>Web-calculator-golang API</h1>
+    <h1>Calculator API Interface</h1>
     
     
     <form id="calculateForm">
-      <label for="expression">Enter an expression:</label><br>
+      <label for="expression">Введите выражение:</label><br>
       <input type="text" id="expression" name="expression" placeholder="2 * 2" required><br>
-      <button type="submit">Send</button>
+      <button type="submit">Отправить выражение</button>
     </form>
     <div id="taskResult" class="result" style="display: none;"></div>
     
@@ -57,35 +57,42 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
   </div>
   
   <script>
+    // Функция для автоматического опроса результата вычисления
     async function pollResult(taskId) {
       const resultDiv = document.getElementById('finalResult');
+      // Обновляем сообщение о том, что происходит вычисление
       resultDiv.style.display = 'block';
-      resultDiv.innerText = "Calculated...";
+      resultDiv.innerText = "Вычисляется...";
       try {
         const response = await fetch('http://localhost:8080/api/v1/expressions/' + encodeURIComponent(taskId));
         if (!response.ok) {
-          resultDiv.innerText = 'Error getting result: ' + await response.text();
+          resultDiv.innerText = 'Ошибка получения результата: ' + await response.text();
           return;
         }
         const data = await response.json();
         const expr = data.expression;
         if (expr.status === "done") {
-          resultDiv.innerText = 'Result: ' + expr.result;
+          // Если вычисление завершено, выводим результат
+          resultDiv.innerText = 'Результат вычисления: ' + expr.result;
         } else if (expr.status === "failed") {
-          resultDiv.innerText = 'Calculation error: ' + expr.ErrorMessage;
+          // Если вычисление завершилось с ошибкой, выводим текст ошибки
+          resultDiv.innerText = 'Ошибка вычисления: ' + expr.ErrorMessage;
         } else {
+          // Если вычисление ещё не завершено, повторяем запрос через 1 секунду
           setTimeout(() => pollResult(taskId), 1000);
         }
       } catch (error) {
-        resultDiv.innerText = 'Request error: ' + error;
+        resultDiv.innerText = 'Ошибка запроса: ' + error;
       }
     }
 
+    // Обработка отправки арифметического выражения
     document.getElementById('calculateForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      // Сбрасываем предыдущий результат и сообщаем, что начинается вычисление
       const finalResultDiv = document.getElementById('finalResult');
       finalResultDiv.style.display = 'block';
-      finalResultDiv.innerText = "Calculated...";
+      finalResultDiv.innerText = "Вычисляется...";
       
       try {
         const response = await fetch('http://localhost:8080/api/v1/calculate', {
@@ -97,17 +104,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
         if (!response.ok) {
           const errorData = await response.json();
           taskResultDiv.style.display = 'block';
-          taskResultDiv.innerText = 'Error: ' + errorData.error_message;
+          taskResultDiv.innerText = 'Ошибка: ' + errorData.error_message;
           return;
         }
         const resJson = await response.json();
         taskResultDiv.style.display = 'block';
-        taskResultDiv.innerText = 'Expression has been set, ID: ' + resJson.id;
+        taskResultDiv.innerText = 'Задача поставлена, ID задачи: ' + resJson.id;
+        // Автоматический опрос результата, без необходимости нажимать кнопку
         pollResult(resJson.id);
       } catch (error) {
         const taskResultDiv = document.getElementById('taskResult');
         taskResultDiv.style.display = 'block';
-        taskResultDiv.innerText = 'Request error: ' + error;
+        taskResultDiv.innerText = 'Ошибка запроса: ' + error;
       }
     });
   </script>
