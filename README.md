@@ -171,6 +171,7 @@ database:
 ### Примеры работы
 
 Для отправки POST запросов удобнее всего использовать программу [Postman](https://www.postman.com/downloads/).
+Удобная коллекция с примерами запросов: https://documenter.getpostman.com/view/40465298/2sAYdinpZ5
 
 ## База данных
 
