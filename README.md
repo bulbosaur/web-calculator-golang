@@ -61,42 +61,54 @@ go run ./cmd/agent/main.go
 ```
 
 
-## Конфигурация
+## Переменные окружения
 
-| Переменная                    | Описание                                            | Значение по умолчанию |
-|-------------------------------|-----------------------------------------------------|-----------------------|
-| ```PORT```                    | Порт для запуска сервера                            | 8080                  |
-| ```HOST```                    | Хост для запуска сервера                            | localhost             |
-| ```TIME_ADDITION_MS```        | Время выполнения операции сложения в миллисекундах  | 100                   |
-|```TIME_SUBTRACTION_MS```      | Время выполнения операции вычитания в миллисекундах | 100                   |
-| ```TIME_MULTIPLICATIONS_MS``` | Время выполнения операции умножения в миллисекундах | 100                   |
-| ```TIME_DIVISIONS_MS```       | Время выполнения операции деления в миллисекундах   | 100                   |
-| ```DATABASE_PATH```           | Путь к базе данных                                  |                       |
+| Переменная                             | Описание                                            | Значение по умолчанию |
+|----------------------------------------|-----------------------------------------------------|-----------------------|
+| ```SERVER_ORC_PORT```                  | Порт для запуска сервера                            | 8080                  |
+| ```SERVER_ORC_HOST```                  | Хост для запуска сервера                            | localhost             |
+| ```DURATION_TIME_ADDITION_MS```        | Время выполнения операции сложения в миллисекундах  | 100                   |
+|```DURATION_TIME_SUBTRACTION_MS```      | Время выполнения операции вычитания в миллисекундах | 100                   |
+| ```DURATION_TIME_MULTIPLICATIONS_MS``` | Время выполнения операции умножения в миллисекундах | 100                   |
+| ```DURATION_TIME_DIVISIONS_MS```       | Время выполнения операции деления в миллисекундах   | 100                   |
+| ```DATABASE_PATH```                    | Путь к базе данных                                  |                       |
 
-
-Чтобы изменить значения переменных окружения, необходимо создать файл ```config.yaml``` (или отредактировать существующий файл ```example_config.yaml```)
-
-### Как должен выглядеть config файл
+Задать новые переменные окружения можно в **PowerShell** перед запуском программы:
 
 ``` bash
-# web-calculator-golang\config\config.yaml
-server:
-  ORC_HOST: localhost
-  ORC_PORT: 8080
-  AG_HOST: localhost
-  AG_PORT: 8000
+$env:SERVER_ORC_HOST = "example.com"
+$env:SERVER_ORC_PORT = "8000"
 
-duration:
-  TIME_ADDITION_MS: 100
-  TIME_SUBTRACTION_MS: 100
-  TIME_MULTIPLICATIONS_MS: 100
-  TIME_DIVISIONS_MS: 100
+$env:DURATION_TIME_ADDITION_MS       = "300"
+$env:DURATION_TIME_SUBTRACTION_MS    = "300"
+$env:DURATION_TIME_MULTIPLICATIONS_MS = "300"
+$env:DURATION_TIME_DIVISIONS_MS      = "300"
 
-worker:
-  COMPUTING_POWER: 5
+$env:DATABASE_PATH = "/path/to/database.db"
+```
 
-database:
-  DATABASE_PATH: ./db/calc.db
+Команды установки переменных окружения в терминале для **Linux/MacOS**:
+
+``` bash
+export SERVER_ORC_HOST=example.com
+export SERVER_ORC_PORT=8000
+export DURATION_TIME_ADDITION_MS=300
+export DURATION_TIME_SUBTRACTION_MS=300
+export DURATION_TIME_MULTIPLICATIONS_MS=300
+export DURATION_TIME_DIVISIONS_MS=300
+export DATABASE_PATH=/path/to/database.db
+```
+
+Для **Windows** (CMD):
+
+``` bash
+   set SERVER_ORC_HOST=example.com
+   set SERVER_ORC_PORT=8000
+   set DURATION_TIME_ADDITION_MS=300
+   set DURATION_TIME_SUBTRACTION_MS=300
+   set DURATION_TIME_MULTIPLICATIONS_MS=300
+   set DURATION_TIME_DIVISIONS_MS=300
+   set DATABASE_DATABASE_PATH=C:\path\to\database.db
 ```
 
 ## Публичный API

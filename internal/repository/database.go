@@ -22,9 +22,7 @@ func InitDB(path string) (*sql.DB, error) {
 	log.Printf("Database path: %s", path)
 
 	dsn := fmt.Sprintf("file:%s?_journal_mode=WAL&_sync=NORMAL&_foreign_keys=ON", path)
-	// log.Printf("Database DSN: %s", dsn)
 	db, err := sql.Open("sqlite", dsn)
-	// db, err := sql.Open("sqlite", path)
 
 	if err != nil {
 		return nil, fmt.Errorf("error when opening database: %v", err)

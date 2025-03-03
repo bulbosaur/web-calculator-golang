@@ -2,13 +2,16 @@ package config
 
 import (
 	"log"
+	"strings"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
 // Init считывает переменные окружения
 func Init() {
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
 	viper.SetDefault("server.ORC_HOST", "localhost")
 	viper.SetDefault("server.ORC_PORT", "8080")
 
@@ -16,27 +19,24 @@ func Init() {
 	viper.SetDefault("duration.TIME_SUBTRACTION_MS", 100)
 	viper.SetDefault("duration.TIME_MULTIPLICATIONS_MS", 100)
 	viper.SetDefault("duration.TIME_DIVISIONS_MS", 100)
-	viper.SetDefault("database.DATABASE_PATH", "./db/calc.db")
+	viper.SetDefault("DATABASE_PATH", "./db/calc.db")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")
 
 	viper.AutomaticEnv()
+	logConfig()
+}
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Printf("config file not found in paths: %v", viper.ConfigFileUsed())
-		} else {
-			log.Printf("error reading config file: %v", err)
-		}
-		log.Print("default values are set")
-	}
-
-	log.Print("config has been successfully initialized")
-
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Printf("Config file changed: %s", e.Name)
-	})
-	viper.WatchConfig()
+func logConfig() {
+	log.Printf("Configuration: ORC_HOST=%s, ORC_PORT=%s, TIME_ADDITION_MS=%d, TIME_SUBTRACTION_MS=%d, TIME_MULTIPLICATIONS_MS=%d, TIME_DIVISIONS_MS=%d, DATABASE_PATH=%s",
+		viper.GetString("server.ORC_HOST"),
+		viper.GetString("server.ORC_PORT"),
+		viper.GetInt("duration.TIME_ADDITION_MS"),
+		viper.GetInt("duration.TIME_SUBTRACTION_MS"),
+		viper.GetInt("duration.TIME_MULTIPLICATIONS_MS"),
+		viper.GetInt("duration.TIME_DIVISIONS_MS"),
+		viper.GetString("DATABASE_PATH"),
+	)
 }
