@@ -11,6 +11,7 @@
 - Поддерживаются операции сложения, вычитания, умножения и деления, а также выражения в скобках
 - Выражение может вводиться как с пробелами между числом и операндом, так и без
 - Калькулятор принимает на вход положительные целые числа
+- Доступен графический интерфейс по адресу ```http://localhost:8080```
 
 ![Работа калькулятора](./img/calc.gif)
 
@@ -57,6 +58,15 @@ git clone https://github.com/bulbosaur/web-calculator-golang
 ```bash
 go run ./cmd/orchestrator/main.go
 ```
+Дождитесь запуска сервера, при первом запуске это может занять некоторое время:
+
+```bash
+2025/01/01 00:00:00 Starting server...
+2025/01/01 00:00:00 Configuration: ORC_HOST=localhost, ORC_PORT=8080, TIME_ADDITION_MS=100, TIME_SUBTRACTION_MS=100, TIME_MULTIPLICATIONS_MS=100, TIME_DIVISIONS_MS=100, DATABASE_PATH=./db/calc.db
+2025/01/01 00:00:00 Database path: ./db/calc.db
+2025/01/01 00:00:00 Successful connection to the database
+2025/01/01 00:00:00 Orchestrator starting on localhost:8080
+```
 
 А во втором:
 
@@ -89,7 +99,7 @@ $env:DURATION_TIME_SUBTRACTION_MS    = "300"
 $env:DURATION_TIME_MULTIPLICATIONS_MS = "300"
 $env:DURATION_TIME_DIVISIONS_MS      = "300"
 
-$env:DATABASE_PATH = "/path/to/database.db"
+$env:DATABASE_PATH = "C:/path/to/database.db"
 
 $env:WORKER_COMPUTING_POWER = "1"
 ```
@@ -116,14 +126,13 @@ export WORKER_COMPUTING_POWER=1
    set DURATION_TIME_SUBTRACTION_MS=300
    set DURATION_TIME_MULTIPLICATIONS_MS=300
    set DURATION_TIME_DIVISIONS_MS=300
-   set DATABASE_DATABASE_PATH=C:\path\to\database.db
+   set DATABASE_PATH=C:\path\to\database.db
    set WORKER_COMPUTING_POWER=1
 ```
 
 ## Публичный API
 
 Базовый URL по умолчанию: ```http://localhost:8080```
-На этом базовом URL пользователю доступен графический интерфейс калькулятора
 
 | API endpoint                | Метод       | Тело запроса                  | Ответ сервера                                                                           | Код ответа |
 |-----------------------------|-------------|-------------------------------|-----------------------------------------------------------------------------------------|------------|
