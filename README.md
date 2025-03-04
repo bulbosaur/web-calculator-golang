@@ -88,7 +88,26 @@ go run ./cmd/agent/main.go
 | ```DATABASE_PATH```                    | Путь к базе данных                                  |./db/calc.db           |
 | ```WORKER_COMPUTING_POWER```           | Количество горутин, выполняющих вычисления          | 5                     |
 
-Задать новые переменные окружения можно в **PowerShell** перед запуском программы:
+Задать новые переменные окружения можно:
+
+- В **.env** файле:
+
+```bash
+# ./config/.env
+server.ORC_HOST=example.com
+server.ORC_PORT=8000
+
+duration.TIME_ADDITION_MS=300
+duration.TIME_SUBTRACTION_MS=300
+duration.TIME_MULTIPLICATIONS_MS=300
+duration.TIME_DIVISIONS_MS=300
+
+DATABASE_PATH=C:/path/to/database.db
+
+worker.COMPUTING_POWER=1
+```
+
+- в **PowerShell** перед запуском программы:
 
 ``` bash
 $env:SERVER_ORC_HOST = "example.com"
@@ -104,7 +123,7 @@ $env:DATABASE_PATH = "C:/path/to/database.db"
 $env:WORKER_COMPUTING_POWER = "1"
 ```
 
-Команды установки переменных окружения в терминале для **Linux/MacOS**:
+- D терминале для **Linux/MacOS**:
 
 ``` bash
 export SERVER_ORC_HOST=example.com
@@ -117,7 +136,7 @@ export DATABASE_PATH=/path/to/database.db
 export WORKER_COMPUTING_POWER=1
 ```
 
-Для **Windows** (CMD):
+- Для **Windows** (CMD):
 
 ``` bash
    set SERVER_ORC_HOST=example.com

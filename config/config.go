@@ -22,11 +22,16 @@ func Init() {
 	viper.SetDefault("DATABASE_PATH", "./db/calc.db")
 	viper.SetDefault("worker.COMPUTING_POWER", 5)
 
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
 	viper.AddConfigPath("./config")
 
 	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Printf("Error reading .env file: %v", err)
+	}
+
 	logConfig()
 }
 
