@@ -46,7 +46,7 @@ func regHandler(exprRepo *repository.ExpressionModel) http.HandlerFunc {
 			ID: id,
 		}
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(response)
 	}
 }

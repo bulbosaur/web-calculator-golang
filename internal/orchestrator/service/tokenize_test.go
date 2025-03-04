@@ -99,6 +99,11 @@ func TestTokenize(t *testing.T) {
 			wantOutput: nil,
 			wantError:  models.ErrorInvalidCharacter,
 		},
+		{
+			expression: "45(4 -8",
+			wantOutput: nil,
+			wantError:  models.ErrorUnclosedBracket,
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.expression, func(t *testing.T) {

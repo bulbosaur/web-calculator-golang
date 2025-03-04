@@ -33,7 +33,7 @@ func TestRegHandler(t *testing.T) {
 			requestBody: models.Request{
 				Expression: "2+2",
 			},
-			wantStatus:    http.StatusOK,
+			wantStatus:    http.StatusCreated,
 			wantResponse:  models.RegisteredExpression{ID: 1},
 			wantError:     models.ErrorResponse{},
 			wantDBRecords: 1,
@@ -54,7 +54,7 @@ func TestRegHandler(t *testing.T) {
 			requestBody: models.Request{
 				Expression: "1/0",
 			},
-			wantStatus:    http.StatusOK,
+			wantStatus:    http.StatusCreated,
 			wantResponse:  models.RegisteredExpression{ID: 1},
 			wantError:     models.ErrorResponse{},
 			wantDBRecords: 2,
